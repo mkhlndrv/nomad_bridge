@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nomadbridge-tools": {
+      "command": "uv",
+      "args": ["run", "/Users/mihailandreev/nomad_bridge/mcp/nomadbridge-tools.py"],
+      "cwd": "/Users/mihailandreev/nomad_bridge"
+    }
+  }
+}
