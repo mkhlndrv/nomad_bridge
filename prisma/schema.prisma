@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum Role {
+  NOMAD
+  UNIVERSITY
+  ADMIN
+}
+
+enum FacilityType {
+  LIBRARY
+  COWORKING
+  GYM
+  CAFE
+  LAB
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum LectureType {
+  OFFER
+  REQUEST
+}
+
+enum LectureStatus {
+  OPEN
+  MATCHED
+  COMPLETED
+}
+
+enum EventCategory {
+  WORKSHOP
+  SEMINAR
+  SOCIAL
+  SPORTS
+  CULTURAL
+  OTHER
+}
+
+enum ForumCategory {
+  GENERAL
+  TIPS
+  EVENTS
+  HOUSING
+  COWORKING
+}
+
+// ─── Models ──────────────────────────────────────────────
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  bio        String?
+  role       Role     @default(NOMAD)
+  trustScore Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  createdEvents Event[]              @relation("EventCreator")
+  rsvps         EventRsvp[]
+  bookings      Booking[]
+  lectures      LectureOpportunity[]
+  forumPosts    ForumPost[]
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  venue       String
+  capacity    Int           @default(50)
+  university  String
+  category    EventCategory @default(OTHER)
+  imageUrl    String?
+  tags        String?       // Comma-separated tags (SQLite has no array type)
+  rsvpCount   Int           @default(0)
+  createdAt   DateTime      @default(now())
+
+  // Relations
+  creatorId String
+  creator   User        @relation("EventCreator", fields: [creatorId], references: [id])
+  rsvps     EventRsvp[]
+}
+
+model EventRsvp {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
+
+model Facility {
+  id           String       @id @default(cuid())
+  name         String
+  university   String
+  type         FacilityType @default(COWORKING)
+  description  String?
+  location     String?
+  imageUrl     String?
+  available    Boolean      @default(true)
+  pricePerHour Float        @default(0)
+  createdAt    DateTime     @default(now())
+
+  // Relations
+  bookings Booking[]
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  date      DateTime
+  startTime String        // "09:00" format
+  endTime   String        // "17:00" format
+  status    BookingStatus @default(PENDING)
+  qrCode    String?       // Generated on confirmation
+  createdAt DateTime      @default(now())
+
+  // Relations
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  facilityId String
+  facility   Facility @relation(fields: [facilityId], references: [id])
+}
+
+model LectureOpportunity {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  topic       String
+  type        LectureType   @default(OFFER)
+  university  String?
+  date        DateTime?
+  status      LectureStatus @default(OPEN)
+  createdAt   DateTime      @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model ForumPost {
+  id        String        @id @default(cuid())
+  title     String
+  content   String
+  category  ForumCategory @default(GENERAL)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
