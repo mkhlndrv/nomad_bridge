@@ -1,45 +1,64 @@
 # Specification: Campus Facility Access Booking
 
 ## Intent / Vibe
-Make it simple and convenient for digital nomads to find and book available university campus spaces (co-working areas, libraries, meeting rooms) for focused work or meetings. The booking experience should feel reliable, transparent, and professional.
+
+Make it simple and delightful for digital nomads to find and book university campus spaces — co-working areas, libraries, meeting rooms, cafes, and labs. The experience should feel like booking a hotel room: browse beautiful spaces, see real availability, pick your slot, and get an instant QR code to walk in. No friction, no confusion, no surprises. The cancellation policy should feel fair — flexible enough for nomad lifestyles but firm enough to prevent abuse.
 
 ## Core Requirements
 
 ### Facility Directory
-- Show a browsable catalog of available campus facilities.
-- Each facility card includes: name, university, photos, location, operating hours, capacity, and price (free or paid).
-- Support filtering by university, facility type, and availability.
+- Browsable catalog of campus facilities with photo cards.
+- Each facility card shows: name, university, type (Library / Coworking / Gym / Cafe / Lab), location, operating hours, price per hour (or "Free"), and availability status.
+- Filter by: university, facility type, price range, and current availability.
+- Search by facility name or university.
+
+### Facility Detail Page
+- Full information: description, photos, amenities, capacity, operating hours, rules, and price.
+- Interactive calendar showing available time slots for the next 14 days.
+- Booked slots are grayed out; available slots are selectable.
+- Clear display of price calculation based on selected duration.
 
 ### Booking Flow
-- User selects a facility and views available time slots on a calendar.
-- User can book a specific time slot (with duration limits if applicable).
-- Upon successful booking, generate a QR code as an entry pass.
-- Show booking confirmation with all details.
+- User selects a facility → picks a date → chooses a time slot (start and end time).
+- Review screen shows: facility name, date, time, duration, total price.
+- Confirm booking → system creates the reservation and generates a QR code.
+- QR code is displayed immediately and saved to "My Bookings" for future access.
+- Booking confirmation includes facility location and any entry instructions.
 
 ### Cancellation Policy
-- Allow cancellation up to 24 hours before the booking.
-- If cancelled too late, apply a small penalty to the user’s trust score.
+- Users can cancel bookings freely up to 24 hours before the start time.
+- Cancellations within 24 hours apply a -2 trust score penalty.
+- No-shows (booking expires without check-in) apply a -3 trust score penalty.
+- Cancelled slots become immediately available for others to book.
+
+### My Bookings
+- Users can view all their upcoming and past bookings.
+- Each booking shows: facility, date, time, status (Pending / Confirmed / Cancelled), and QR code.
+- Quick access to cancel or view QR code.
 
 ## Edge Cases & Constraints
-- No double bookings for the same time slot.
-- Handle fully booked facilities gracefully.
-- Past time slots should not be bookable.
-- Show clear messages when no slots are available.
-- Respect facility operating hours.
+- No double-booking: if two users try to book the same slot simultaneously, use a database transaction to ensure only one succeeds.
+- Past time slots cannot be selected.
+- Bookings must fall within facility operating hours.
+- Maximum booking duration: 4 hours per session (configurable per facility).
+- Users with trust score < -5 cannot make new bookings (show a clear message explaining why).
+- Handle facilities that are temporarily unavailable (maintenance, holidays).
+- Show clear "No available slots" message when everything is booked.
 
 ## Acceptance Criteria
-- Users can browse facilities and see real availability.
-- Booking successfully reserves the slot and updates the database.
-- QR code is generated for the booking.
-- Cancellation works within the allowed window.
-- The interface is clean and fully responsive.
+- Users can browse facilities with real-time availability.
+- Booking flow creates a reservation and generates a QR code.
+- Double-booking is prevented at the database level.
+- Cancellation within 24 hours works and updates trust score.
+- "My Bookings" page shows accurate booking history.
+- The interface is fully responsive on mobile and desktop.
+- All validation errors show clear, helpful messages.
 
 ## Definition of Done
-- End-to-end booking flow works correctly
+- End-to-end booking flow works: browse → select → book → QR code
 - Calendar and availability logic is accurate
 - QR code generation is integrated
+- Cancellation policy enforced with trust score updates
+- Double-booking prevented via Prisma $transaction
 - Responsive design on all devices
-- Basic validation and error handling
 - Atomic commits used throughout implementation
-
-This specification expresses clear user intent and detailed functional requirements.
