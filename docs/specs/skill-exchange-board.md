@@ -36,6 +36,40 @@ Create a two-sided marketplace that feels collaborative and professional — a p
 - Nomad ratings contribute to their trust score (+3 per 4-5 star, -2 per 1-2 star rating).
 - Feedback is visible on the nomad's profile (aggregated average + recent comments).
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `LectureBoard` | Server | Main layout with tab bar and filtered lecture card list |
+| `LectureTabBar` | Client | Three tabs: "Requests from Universities", "Offers from Nomads", "All Opportunities" |
+| `LectureCard` | Server | Title, topic tags, type badge (Request/Offer), status badge, poster name, format, compensation |
+| `LectureDetail` | Server | Full posting: description, topics, format, compensation, availability, poster profile summary |
+| `LectureFilterBar` | Client | Filters: topic, format, compensation type, university, status |
+| `CreateLectureForm` | Client | Dual-mode form based on user role (UNIVERSITY → request fields, NOMAD → offer fields) |
+| `ApplyButton` | Client | Nomad applies to university request. Opens modal with message textarea |
+| `InviteButton` | Client | University invites nomad. Opens modal with message textarea |
+| `LectureStatusBadge` | Server | Color-coded: Open (green), In Discussion (yellow), Matched (blue), Completed (gray) |
+| `MyConnections` | Server | All applications/invitations grouped by status with action buttons |
+| `ConnectionCard` | Client | Other party info, status, action buttons (Accept/Reject/Mark Complete) |
+| `FeedbackForm` | Client | Post-completion: StarRating (1-5) + comment textarea |
+| `FeedbackDisplay` | Server | Aggregated average rating + recent comments |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/lectures` | GET | List with filters (type, topic, format, status, university). Paginated |
+| `app/api/lectures` | POST | Create posting. Validate role matches type. Rate limit: 3/week |
+| `app/api/lectures/[id]` | GET | Detail with poster profile |
+| `app/api/lectures/[id]` | PATCH | Update or change status. Enforce lifecycle: OPEN → MATCHED → COMPLETED |
+| `app/api/lectures/[id]/apply` | POST | Nomad applies (NOMAD role only). Create application, notify university |
+| `app/api/lectures/[id]/invite` | POST | University invites (UNIVERSITY role only). Create invitation, notify nomad |
+| `app/api/lectures/[id]/respond` | POST | Accept/reject application. On accept: status → MATCHED |
+| `app/api/lectures/[id]/complete` | POST | Mark completed. Trust score +10 for nomad |
+| `app/api/lectures/[id]/feedback` | POST | Submit rating. One per party. Trust: +3 for 4-5 stars, -2 for 1-2 stars |
+
 ## Edge Cases & Constraints
 - Requests and offers should only show future availability by default; past ones move to an archive.
 - Prevent spam: limit to 3 new posts per user per week.
