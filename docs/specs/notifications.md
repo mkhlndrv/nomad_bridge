@@ -53,6 +53,36 @@ The following actions trigger notifications:
 - Click a notification to navigate to the relevant page.
 - "Mark all as read" action.
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `NotificationBell` | Client | Bell icon in navbar with unread count badge. Click opens dropdown. Polls for updates |
+| `NotificationDropdown` | Client | Last 10 notifications, "Mark all read" button, "View all" link |
+| `NotificationItem` | Client | Icon by type, short message, relative timestamp, read/unread styling. Click navigates + marks read |
+| `NotificationCenter` | Server | Full page: paginated notification list. Filter: All/Unread. Grouped by date |
+| `NotificationPreferences` | Client | Settings grid: rows = categories (Events/Bookings/Lectures/Community/Trust), cols = channels (Email/LINE). Toggle switches |
+| `NotificationToggle` | Client | Single toggle switch component |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/notifications` | GET | Current user's notifications. Paginated. Optional `unread=true` filter |
+| `app/api/notifications/unread-count` | GET | Unread count for bell badge polling |
+| `app/api/notifications/mark-read` | POST | Mark specific IDs or all as read |
+| `app/api/notifications/preferences` | GET | Current user's preference matrix |
+| `app/api/notifications/preferences` | PUT | Update preferences |
+
+### Shared Logic
+
+- `lib/notifications.ts` — `sendNotification(userId, type, payload)`: check preferences → create in-app record → mock email → mock LINE
+- `lib/mock-email.ts` — `mockSendEmail()`: log formatted HTML template to console
+- `lib/mock-line.ts` — `mockSendLine()`: log short conversational message (<200 chars) to console
+- `lib/notification-types.ts` — maps 13 notification types to 5 categories
+
 ## Edge Cases & Constraints
 - Never send duplicate notifications for the same event (idempotency).
 - If both email and LINE fail, log the failure but don't retry indefinitely (max 2 retries).
