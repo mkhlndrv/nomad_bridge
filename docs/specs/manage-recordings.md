@@ -45,6 +45,41 @@ Knowledge shared at events and guest lectures shouldn't disappear when the sessi
 - Organizers control visibility: Public, Attendees Only, or Unlisted (link-only).
 - University-affiliated recordings may require being logged in.
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `RecordingLibrary` | Server | Grid of recording cards with filter bar, search, sort dropdown, pagination |
+| `RecordingFilterBar` | Client | Filters: university, event category, speaker, date range. Transcript search toggle |
+| `RecordingCard` | Server | Thumbnail, event title, speaker, duration, date, view count, visibility badge, tags |
+| `RecordingPlayer` | Client | Renders embed by source type: tl;dv iframe, YouTube iframe, Vimeo iframe, or native HTML5 video |
+| `TranscriptPanel` | Client | Side panel (desktop) / below-player (mobile). Searchable transcript. Timestamped segments clickable to seek |
+| `HighlightTimeline` | Client | Horizontal bar with clickable key moment markers |
+| `RecordingUploadForm` | Client | Three tabs: "tl;dv Link", "YouTube/Vimeo", "Upload File". Visibility selector |
+| `TldvLinkInput` | Client | Paste tl;dv URL → fetch metadata preview (title, duration, transcript, thumbnail) |
+| `VideoUrlInput` | Client | Paste YouTube/Vimeo URL → validate → show embedded preview |
+| `FileUploadInput` | Client | Large file upload with progress bar, cancel, resume. 500MB limit, MP4/MP3 |
+| `VisibilitySelector` | Client | Dropdown: Public (Globe icon), Attendees Only (Lock), Unlisted (Link) |
+| `EventRecordingsSection` | Server | Section on event detail page listing recordings. "Add Recording" for organizer. Access control |
+| `PersonalNotes` | Client | Timestamped note-taking while watching. Notes saved per user per recording |
+| `RecordingAccessGate` | Server | Shown when user lacks permission. Message + link to event page |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/recordings` | GET | List with filters. Respect visibility (PUBLIC=all, ATTENDEES_ONLY=check RSVP, UNLISTED=direct link only). Search includes transcripts. Paginated |
+| `app/api/recordings` | POST | Create recording linked to event (organizer/lecturer only). Validate source type + URL |
+| `app/api/recordings/[id]` | GET | Single recording with event context. Increment view count. Access control check |
+| `app/api/recordings/[id]` | PATCH | Update metadata/visibility/sort order (organizer only) |
+| `app/api/recordings/[id]` | DELETE | Delete recording (organizer/admin only) |
+| `app/api/recordings/tldv-metadata` | POST | Fetch metadata from tl;dv link. Mock for MVP: return placeholder data |
+| `app/api/recordings/upload` | POST | Handle direct file upload (multipart). 500MB, MP4/MP3. Store in public/uploads |
+| `app/api/recordings/[id]/notes` | GET/POST | User's personal timestamped notes for a recording |
+| `app/api/recordings/[id]/transcript` | PATCH | Edit/correct transcript (organizer only) |
+
 ## Edge Cases & Constraints
 - tl;dv API may be unavailable — gracefully fall back to displaying just the link.
 - Large video uploads need progress indication and resume-on-failure support.
