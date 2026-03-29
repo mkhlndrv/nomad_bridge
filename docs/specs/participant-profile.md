@@ -44,6 +44,37 @@ Every nomad on NomadBridge should feel like a trusted, visible member of the com
 - University staff can view nomad profiles when reviewing RSVP lists or lecture applications.
 - Users can see their own trust score breakdown (which actions contributed).
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `ProfileHeader` | Server | Avatar, name, role badge, verification badge, trust score, bio |
+| `ProfileAvatar` | Server | Circular avatar with fallback placeholder. Verification badge overlay |
+| `VerificationBadge` | Server | Displays level: Unverified (gray), Email Verified (blue), Community Verified (green shield) |
+| `SkillTags` | Server | Horizontal list of skill tag badges |
+| `ActivitySummary` | Server | 4 stat cards: events attended, lectures given, bookings made, forum posts. Each with lucide icon |
+| `TrustScoreCard` | Server | Current score, color indicator, progress toward next verification level, "View History" link |
+| `TrustScoreHistory` | Client | Paginated timeline of score changes with reason, delta, date, running total |
+| `ProfileEditForm` | Client | Editable fields: name, bio, skills (tag input), photo upload (2MB), location. Email read-only |
+| `SkillTagInput` | Client | Autocomplete tag input for adding/removing skills |
+| `TrustScoreBadge` | Server | Color-coded score display: green (≥30), yellow (0-29), red (<0). Shared UI component |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/profile` | GET | Current user's profile with activity counts (aggregated from EventRsvp, Booking, etc.) |
+| `app/api/profile` | PATCH | Update profile. Validate name/bio length, skills array. Cannot change email/role |
+| `app/api/profile/[id]` | GET | Another user's public profile. Excludes email. Includes activity summary |
+| `app/api/profile/avatar` | POST | Upload profile photo. 2MB limit, JPEG/PNG |
+| `app/api/profile/trust-history` | GET | Paginated trust score change log for current user |
+
+**Shared Logic (`lib/trust-score.ts`):**
+- `adjustTrustScore(userId, delta, reason)` — atomic update with floor of -10, creates log entry
+- `calculateVerificationLevel(user)` — returns level based on email verified + trust score ≥ 30
+
 ## Edge Cases & Constraints
 - New users with score 0 should not feel penalized — use encouraging language ("Build your reputation!").
 - Users with negative trust score (< 0) should see a warning and suggestions for improvement.
