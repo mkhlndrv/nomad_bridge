@@ -36,6 +36,38 @@ Make it simple and delightful for digital nomads to find and book university cam
 - Each booking shows: facility, date, time, status (Pending / Confirmed / Cancelled), and QR code.
 - Quick access to cancel or view QR code.
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `FacilityDirectory` | Server | Grid of facility cards with filter bar and pagination |
+| `FacilityFilterBar` | Client | Type pills, university dropdown, price range, availability toggle |
+| `FacilityCard` | Server | Photo card: name, university, type badge, location, price ("Free" or "฿X/hr"), availability dot |
+| `FacilityDetail` | Server | Photos, description, amenities, capacity, hours, rules, price. Contains BookingCalendar |
+| `BookingCalendar` | Client | 14-day calendar grid. Each day shows hourly time slots. Booked = grayed, available = selectable |
+| `TimeSlotGrid` | Client | Single day's slots as vertical grid. Selected slots highlighted. Max 4 consecutive hours |
+| `BookingReviewPanel` | Client | Summary panel: facility, date, time, duration, calculated price. Confirm/Cancel buttons |
+| `BookingConfirmation` | Client | Success: QR code display, facility details, entry instructions |
+| `MyBookings` | Server | Two sections: Upcoming and Past bookings |
+| `BookingCard` | Client | Facility, date, time, status badge, "Show QR" button, "Cancel" button with 24h warning |
+| `CancelBookingButton` | Client | Handles cancellation with trust penalty warning if within 24h |
+| `QrCodeDisplay` | Client | Renders QR code from string value (shared UI component) |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/facilities` | GET | List with filters (type, university, price, availability) |
+| `app/api/facilities/[id]` | GET | Detail with bookings for next 14 days |
+| `app/api/facilities/[id]/availability` | GET | Available time slots for a specific date |
+| `app/api/bookings` | GET | Current user's bookings (upcoming + past) |
+| `app/api/bookings` | POST | Create booking via `$transaction`: verify slot available, no overlap, trust ≥ -5, generate QR. Notify |
+| `app/api/bookings/[id]` | GET | Booking detail with QR code (ownership check) |
+| `app/api/bookings/[id]/cancel` | POST | Cancel. If within 24h: -2 trust score. Set CANCELLED. Free slot. Notify |
+| `app/api/bookings/[id]/checkin` | POST | QR scan check-in. Validate QR matches booking |
+
 ## Edge Cases & Constraints
 - No double-booking: if two users try to book the same slot simultaneously, use a database transaction to ensure only one succeeds.
 - Past time slots cannot be selected.
