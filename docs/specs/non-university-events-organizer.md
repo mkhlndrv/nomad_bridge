@@ -37,6 +37,33 @@ Not all valuable events happen inside university walls. Digital nomads organize 
   - Quick actions: edit event, cancel event, send announcement to attendees.
 - Post-event: organizer can upload photos and materials (same as university events).
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `CommunityEventForm` | Client | Full creation form: title, description, date/time, venue (free text), capacity, event type, category, cover image, tags, free/paid. Validates trust ≥ 10 |
+| `EventTypeSelector` | Client | Visual selector for 5 types: Meetup, Workshop, Skill Share, Social, Coworking Session. Each with lucide icon |
+| `CommunityBadge` | Server | Purple "Community Event" badge on event cards when `isCommunity` is true |
+| `OrganizerDashboard` | Server | Summary stats + list of organizer's events with RSVP counts |
+| `OrganizerEventCard` | Client | Extended card: RSVP count, expandable attendee list, quick actions (Edit, Cancel, Announce) |
+| `AttendeeList` | Server | Names (no emails) with check-in status toggle |
+| `ManualCheckinToggle` | Client | Toggle per attendee for manual check-in at non-university venues |
+| `SendAnnouncementForm` | Client | Modal to send message to all RSVPed attendees |
+| `TrustGateMessage` | Server | Shown when trust score < 10. Current score, requirement explanation, suggestions |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/events` | POST (enhanced) | Community event creation: validate trust ≥ 10, active events ≤ 5, auto-set organizer attending |
+| `app/api/events/dashboard` | GET | Organizer's events with attendee data (names, not emails) |
+| `app/api/events/[id]/checkin` | POST | Manual check-in toggle (organizer only). Awards +5 trust to attendee |
+| `app/api/events/[id]/announce` | POST | Send announcement to all RSVPed users (organizer only) |
+
+*Note: Most event CRUD is shared with the Event Discovery & RSVP feature.*
+
 ## Edge Cases & Constraints
 - Minimum trust score to create events prevents spam/abuse from brand-new accounts.
 - Events with inappropriate content: admin can flag and hide events (moderation).
