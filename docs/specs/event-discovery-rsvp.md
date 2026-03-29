@@ -39,6 +39,39 @@ Create a welcoming, effortless experience where digital nomads can discover acad
 - Materials are listed on the event detail page with file type icons and download links.
 - Materials are searchable by event title and tags.
 
+## Component Breakdown
+
+### Frontend UI Components
+
+| Component | Type | Responsibility |
+|-----------|------|----------------|
+| `EventFeed` | Server | Fetches and renders paginated event list with filters |
+| `EventFilterBar` | Client | University dropdown, category pills, date range, search. Updates URL params |
+| `EventCard` | Server | Event summary card: thumbnail, title, date, university, venue, tags, capacity bar. Links to detail |
+| `EventDetail` | Server | Full event layout: hero image, description, schedule, speakers, capacity bar, RSVP button, photos, materials |
+| `RsvpButton` | Client | Handles RSVP toggle: "RSVP Now" / "Cancel RSVP" / "Join Waitlist" states. Calls API, optimistic UI |
+| `RsvpConfirmation` | Client | Modal after RSVP success: QR code display, event summary, "Add to Calendar" link |
+| `WaitlistIndicator` | Server | Shows waitlist position number |
+| `EventPhotoGallery` | Server | Grid of uploaded event photos with lightbox |
+| `EventBoardUpload` | Client | Camera/upload for onsite event board photos. 5MB limit, JPEG/PNG. Creates draft event |
+| `PostEventMaterials` | Server | File list with type icons and download links. Shown after event date |
+| `MaterialUploadForm` | Client | Form for organizers: file upload or URL, title, type selector |
+| `CapacityBar` | Server | Visual progress bar: RSVP count vs capacity (shared UI component) |
+
+### Backend Logic Components / API Routes
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/events` | GET | List events with pagination, filtering (category, university, search, date), sort by date |
+| `app/api/events` | POST | Create event. Validate capacity > 0, future date. Community events: check trust ≥ 10, active ≤ 5 |
+| `app/api/events/[id]` | GET | Single event with creator, RSVPs, materials, photos. Compute `isRsvped` for current user |
+| `app/api/events/[id]` | PATCH | Update event (organizer/admin only) |
+| `app/api/events/[id]/rsvp` | POST | RSVP via `$transaction`: check capacity, create EventRsvp, increment count. Waitlist if full. Trigger notification |
+| `app/api/events/[id]/rsvp` | DELETE | Cancel RSVP via `$transaction`: delete, decrement count, promote waitlisted. Trigger notification |
+| `app/api/events/[id]/materials` | POST | Upload post-event material (organizer only). Notify attendees |
+| `app/api/events/[id]/photos` | POST | Upload event photo. 5MB limit, JPEG/PNG |
+| `app/api/events/draft` | POST | Create draft event from board photo upload. Requires admin approval |
+
 ## Edge Cases & Constraints
 - Events in the past should not allow RSVP but should remain browsable with a "Past Event" badge.
 - Events with zero capacity should display "Registration Closed."
