@@ -90,6 +90,83 @@ The Prisma schema (`prisma/schema.prisma`) has basic models but significant gaps
 - Keep functions small and single-purpose.
 - Add basic tests for important business logic (RSVP, booking, trust score).
 
+## Authentication (Mock — MVP)
+
+- No auth library. Mock auth via `x-user-id` request header.
+- Every protected API route: `const userId = request.headers.get('x-user-id')`
+- If no userId → return `NextResponse.json({ error: "Unauthorized" }, { status: 401 })`
+- Look up user: `await prisma.user.findUnique({ where: { id: userId } })`
+- If user not found → 401
+- Admin check: `user.role === 'ADMIN'`
+- Venue manager check: `user.role === 'VENUE_MANAGER'`
+- Public routes (no auth required): GET event list, GET forum threads, GET venue directory
+
+## API Response Contracts
+
+- Success (single): `{ data: { ... } }`
+- Success (list): `{ data: [...], total: number, page: number, pageSize: number }`
+- Error: `{ error: "Human-readable message" }`
+- Created: 201 status + `{ data: { ... } }`
+- Validation: 400 + `{ error: "Title is required" }`
+- Auth: 401 + `{ error: "Unauthorized" }`
+- Forbidden: 403 + `{ error: "Only the author can edit this" }`
+- Not found: 404 + `{ error: "Event not found" }`
+- Conflict: 409 + `{ error: "Already RSVPed to this event" }`
+- Rate limited: 429 + `{ error: "Please wait before posting again" }`
+
+## Project File Structure
+
+```
+app/
+├── api/                          # API routes
+│   ├── forum/                    # Feature-grouped
+│   │   ├── route.ts              # GET list, POST create
+│   │   └── [id]/
+│   │       ├── route.ts          # GET detail, PATCH edit, DELETE
+│   │       ├── vote/route.ts
+│   │       └── replies/route.ts
+│   ├── events/route.ts
+│   ├── profile/route.ts
+│   └── ...
+├── forum/                        # Feature pages
+│   ├── page.tsx                  # Feed/list page
+│   └── [id]/page.tsx             # Detail page
+├── events/page.tsx
+├── profile/page.tsx
+├── layout.tsx
+├── page.tsx                      # Landing/home
+└── globals.css
+components/                       # Shared UI components (PascalCase)
+├── ThreadCard.tsx
+├── TrustScoreBadge.tsx
+└── ...
+lib/                              # Shared utilities (camelCase)
+├── prisma.ts
+├── utils.ts
+└── ...
+```
+
+## Testing
+
+- **Framework:** Vitest
+- **Test location:** `__tests__/` directory at project root
+- **Unit tests:** `__tests__/unit/` — business logic (trust-score, RSVP logic)
+- **Integration tests:** `__tests__/integration/` — API route handlers
+- **Run:** `npx vitest run`
+- **Naming:** `<module>.test.ts`
+
+## Seed Data
+
+Run `npx prisma db seed` to populate development data.
+Seed file: `prisma/seed.ts`
+
+Default test users:
+- Alice (NOMAD, trustScore: 25) — active nomad
+- Bob (NOMAD, trustScore: 5) — new nomad
+- Carol (UNIVERSITY, trustScore: 0) — university admin
+- Dave (ADMIN, trustScore: 0) — platform admin
+- Eve (VENUE_MANAGER, trustScore: 0) — facility manager
+
 ## Key Shared Libraries (planned)
 
 - `lib/prisma.ts` — Prisma client singleton (exists)
