@@ -1,5 +1,7 @@
 # Collaboration Organize Board
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Create a vibrant two-sided marketplace where universities and nomads find meaningful ways to work together — not just guest lectures, but workshops, research projects, mentorship, and more. The board should feel like a curated opportunity hub: universities post what they need, nomads offer what they know, and the matching happens naturally through browse, invite, and apply flows. Every interaction should feel purposeful and collaborative — "Let's build something together."

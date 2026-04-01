@@ -1,5 +1,7 @@
 # University Event Discovery & RSVP
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Create a welcoming, effortless experience where digital nomads can discover academic events at Bangkok universities, RSVP with one click, and stay connected after the event through materials and recordings. The discovery flow should feel like scrolling a curated feed — relevant, visual, and fast. Nomads should also be able to snap a photo of a physical event board on campus and have the platform extract event details automatically — bridging the gap between offline bulletin boards and digital discovery.

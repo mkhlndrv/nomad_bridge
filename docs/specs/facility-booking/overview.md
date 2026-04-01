@@ -1,5 +1,7 @@
 # Campus Facility Access Booking
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Make it easy for digital nomads to discover and request university campus spaces — co-working areas, libraries, meeting rooms, cafes, and labs. Unlike a hotel booking, campus venues require coordination with a responsible venue manager who approves requests based on event quality and community interest. The experience should feel collaborative: a nomad proposes an event at a venue, the community shows interest, and the venue manager sees real demand before confirming. Social proof drives bookings — "20 people want to attend your talk at our library? Let's make it happen."

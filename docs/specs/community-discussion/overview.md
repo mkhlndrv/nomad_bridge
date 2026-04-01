@@ -1,5 +1,7 @@
 # Community Discussion Board
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Give the NomadBridge community a casual, friendly space to share tips, ask questions, discuss events, and connect with each other. The forum should feel like a cozy coworking lounge conversation — low-pressure, helpful, and organized enough to find what you need without being buried in noise. Think Reddit-lite for Bangkok nomads: categorized threads, easy posting, and just enough structure to keep things useful.

@@ -1,5 +1,7 @@
 # Participant Profile & Verification
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Every nomad on NomadBridge should feel like a trusted, visible member of the community — not an anonymous visitor. The profile should tell a story: who they are, what skills they bring, where they've been active, and how reliable they are. University staff reviewing an RSVP or guest lecture application should be able to glance at a profile and feel confident about who they're inviting onto campus. The trust score should feel fair, transparent, and motivating — rewarding good behavior rather than punishing mistakes.

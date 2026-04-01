@@ -2,6 +2,7 @@
 
 **Feature:** [Participant Profile & Verification](overview.md)
 **Prefix:** PRF-TRUST
+> Last updated: 2026-04-01
 
 ## Requirements
 

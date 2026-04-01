@@ -1,5 +1,7 @@
 # Specification: Notifications (Email, LINE & Telegram)
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Keep users informed without overwhelming them. Notifications should feel helpful and timely — like a friend tapping your shoulder to say "Hey, that workshop you wanted is tomorrow" or "Your booking is confirmed, here's your QR code." The system supports three channels: email (reliable, always works), LINE (popular in Thailand, feels instant and personal), and Telegram (popular globally among digital nomads, great for rich messages). Users should feel in control of what they receive and how.

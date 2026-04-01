@@ -1,5 +1,7 @@
 # Specification: Manage Recordings (tl;dv Integration)
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Knowledge shared at events and guest lectures shouldn't disappear when the session ends. NomadBridge should make it effortless to capture, organize, and share recordings from live events and webinars — so nomads who couldn't attend can still learn, and organizers can build a library of valuable content. Integration with tl;dv brings automatic transcription and highlights, turning raw recordings into searchable, skimmable knowledge. The experience should feel like having a personal note-taker at every event.

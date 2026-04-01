@@ -2,6 +2,7 @@
 
 **Feature:** [Campus Facility Access Booking](overview.md)
 **Prefix:** FAC-DIR
+> Last updated: 2026-04-01
 
 ## Requirements
 

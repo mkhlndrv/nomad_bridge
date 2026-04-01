@@ -2,6 +2,7 @@
 
 **Feature:** [Notifications (Email, LINE & Telegram)](overview.md)
 **Prefix:** NTF-EMAIL
+> Last updated: 2026-04-01
 
 ## Requirements
 

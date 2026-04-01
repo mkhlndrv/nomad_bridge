@@ -1,5 +1,7 @@
 # Specification: Non-University Events Organizer
 
+> Last updated: 2026-04-01
+
 ## Intent / Vibe
 
 Not all valuable events happen inside university walls. Digital nomads organize meetups, workshops, skill-shares, and social gatherings at coworking spaces, cafes, and rooftops across Bangkok. NomadBridge should be the go-to platform for these community-organized events too — giving nomads the same smooth discovery and RSVP experience for grassroots events as for university ones. The vibe should feel empowering: "You have something to share? Host it here."

@@ -2,6 +2,7 @@
 
 **Feature:** [Campus Facility Access Booking](overview.md)
 **Prefix:** FAC-MGR
+> Last updated: 2026-04-01
 
 ## Requirements
 

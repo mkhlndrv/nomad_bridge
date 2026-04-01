@@ -2,6 +2,7 @@
 
 **Feature:** [University Event Discovery & RSVP](overview.md)
 **Prefix:** EVT-MAT
+> Last updated: 2026-04-01
 
 ## Requirements
 

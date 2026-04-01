@@ -2,6 +2,7 @@
 
 **Feature:** [Collaboration Organize Board](overview.md)
 **Prefix:** COL-BOARD
+> Last updated: 2026-04-01
 
 ## Requirements
 

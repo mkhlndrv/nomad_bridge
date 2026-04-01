@@ -2,6 +2,7 @@
 
 **Feature:** [Non-University Events Organizer](overview.md)
 **Prefix:** COM-CREATE
+> Last updated: 2026-04-01
 
 ## Requirements
 

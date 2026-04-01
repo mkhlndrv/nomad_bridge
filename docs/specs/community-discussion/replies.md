@@ -2,6 +2,7 @@
 
 **Feature:** [Community Discussion Board](overview.md)
 **Prefix:** FRM-REPLY
+> Last updated: 2026-04-01
 
 ## Requirements
 
