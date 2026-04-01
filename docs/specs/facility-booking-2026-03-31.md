@@ -2,129 +2,154 @@
 
 ## Intent / Vibe
 
-Make it simple and delightful for digital nomads to find and book university campus spaces — co-working areas, libraries, meeting rooms, cafes, and labs. The experience should feel like booking a hotel room: browse beautiful spaces, see real availability, pick your slot, and get an instant QR code to walk in. No friction, no confusion, no surprises. The cancellation policy should feel fair — flexible enough for nomad lifestyles but firm enough to prevent abuse.
+Make it easy for digital nomads to discover and request university campus spaces — co-working areas, libraries, meeting rooms, cafes, and labs. Unlike a hotel booking, campus venues require coordination with a responsible venue manager who approves requests based on event quality and community interest. The experience should feel collaborative: a nomad proposes an event at a venue, the community shows interest, and the venue manager sees real demand before confirming. Social proof drives bookings — "20 people want to attend your talk at our library? Let's make it happen."
 
 ## Core Requirements
 
-### SF1: Facility Directory
+### SF1: Venue Directory
 
 | ID | Requirement | Priority |
 |----|------------|----------|
-| FAC-DIR-01 | Browsable catalog of campus facilities with photo cards | Must |
-| FAC-DIR-02 | Each facility card shows: name, university, type (Library / Coworking / Gym / Cafe / Lab), location, operating hours, price per hour (or "Free"), and availability status | Must |
-| FAC-DIR-03 | Filter by: university, facility type, price range, and current availability | Must |
-| FAC-DIR-04 | Search by facility name or university | Should |
-| FAC-DIR-05 | Full facility detail page: description, photos, amenities, capacity, operating hours, rules, and price | Must |
-| FAC-DIR-06 | Interactive calendar showing available time slots for the next 14 days | Must |
-| FAC-DIR-07 | Booked slots are grayed out; available slots are selectable | Must |
-| FAC-DIR-08 | Clear display of price calculation based on selected duration | Must |
+| FAC-DIR-01 | Browsable catalog of campus venues with photo cards | Must |
+| FAC-DIR-02 | Each venue card shows: name, university, type (Library / Coworking / Gym / Cafe / Lab), location, operating hours, capacity, and price per hour (or "Free") | Must |
+| FAC-DIR-03 | Filter by: university, venue type, price range, and capacity | Must |
+| FAC-DIR-04 | Search by venue name or university | Should |
+| FAC-DIR-05 | Full venue detail page: description, photos, amenities, capacity, operating hours, rules, price, and venue manager name | Must |
+| FAC-DIR-06 | Show "Request-based booking" badge — venues are not instant-book | Must |
 
-### SF2: Booking Flow
+### SF2: Booking Request & Interest
 
 | ID | Requirement | Priority |
 |----|------------|----------|
-| FAC-BOOK-01 | User selects a facility, picks a date, and chooses a time slot (start and end time) | Must |
-| FAC-BOOK-02 | Review screen shows: facility name, date, time, duration, total price | Must |
-| FAC-BOOK-03 | Confirm booking creates the reservation and generates a QR code | Must |
-| FAC-BOOK-04 | QR code is displayed immediately and saved to "My Bookings" for future access | Must |
-| FAC-BOOK-05 | Booking confirmation includes facility location and any entry instructions | Should |
+| FAC-REQ-01 | Any verified user can create a booking request for a venue | Must |
+| FAC-REQ-02 | Request fields: venue, desired date/time range, event title, event description, expected attendance, purpose/category | Must |
+| FAC-REQ-03 | Submitted requests appear as public proposals visible to all users | Must |
+| FAC-REQ-04 | Community members can express interest ("I'd attend") on any open request | Must |
+| FAC-REQ-05 | Interest counter displayed prominently on each request | Must |
+| FAC-REQ-06 | Each venue has a configurable minimum interest threshold (e.g., 5 people) | Should |
+| FAC-REQ-07 | When interest threshold is met, request status moves to "Under Review" and venue manager is notified | Must |
+| FAC-REQ-08 | Requester can manually submit for review before threshold is met | Should |
 
-### SF3: Cancellation & Trust
-
-| ID | Requirement | Priority |
-|----|------------|----------|
-| FAC-CANCEL-01 | Users can cancel bookings freely up to 24 hours before the start time | Must |
-| FAC-CANCEL-02 | Cancellations within 24 hours apply a -2 trust score penalty | Must |
-| FAC-CANCEL-03 | No-shows (booking expires without check-in) apply a -3 trust score penalty | Must |
-| FAC-CANCEL-04 | Cancelled slots become immediately available for others to book | Must |
-
-### SF4: My Bookings
+### SF3: Venue Manager Dashboard
 
 | ID | Requirement | Priority |
 |----|------------|----------|
-| FAC-MYBK-01 | Users can view all their upcoming and past bookings | Must |
-| FAC-MYBK-02 | Each booking shows: facility, date, time, status (Pending / Confirmed / Cancelled), and QR code | Must |
-| FAC-MYBK-03 | Quick access to cancel or view QR code | Should |
+| FAC-MGR-01 | Venue managers (VENUE_MANAGER role) see a dashboard of incoming requests for their venues | Must |
+| FAC-MGR-02 | Each request shows: requester profile + trust score, event details, interest count, requested dates | Must |
+| FAC-MGR-03 | Venue manager can approve a request — confirms the date/time and generates a QR code for the booking | Must |
+| FAC-MGR-04 | Venue manager can reject a request with a reason message | Must |
+| FAC-MGR-05 | On approval: requester and all interested users are notified | Must |
+| FAC-MGR-06 | On rejection: requester is notified with the reason | Must |
+| FAC-MGR-07 | Venue manager can suggest alternative dates when rejecting or before approving | Should |
+
+### SF4: My Bookings & Status
+
+| ID | Requirement | Priority |
+|----|------------|----------|
+| FAC-MYBK-01 | Users can view all their booking requests and confirmed bookings | Must |
+| FAC-MYBK-02 | Request lifecycle displayed: Open (gathering interest) → Under Review → Approved / Rejected | Must |
+| FAC-MYBK-03 | Approved bookings show: venue, date, time, QR code, status badge | Must |
+| FAC-MYBK-04 | Cancellation before venue approval: no penalty | Must |
+| FAC-MYBK-05 | Cancellation after approval, 24h+ before event: -2 trust score penalty | Must |
+| FAC-MYBK-06 | No-show (approved booking, no check-in): -3 trust score penalty | Must |
 
 ## Component Breakdown
 
-### SF1: Facility Directory
+### SF1: Venue Directory
 
-- `FacilityDirectory` (Server) — Grid of facility cards with filter bar and pagination
-  - `FacilityFilterBar` (Client) — Type pills, university dropdown, price range, availability toggle
-  - `FacilityCard` (Server) — Photo card: name, university, type badge, location, price ("Free" or "฿X/hr"), availability dot
-- `FacilityDetail` (Server) — Photos, description, amenities, capacity, hours, rules, price. Contains BookingCalendar
-  - `BookingCalendar` (Client) — 14-day calendar grid. Each day shows hourly time slots. Booked = grayed, available = selectable [also used by SF2]
-    - `TimeSlotGrid` (Client) — Single day's slots as vertical grid. Selected slots highlighted. Max 4 consecutive hours
+- `VenueDirectory` (Server) — Grid of venue cards with filter bar and pagination
+  - `VenueFilterBar` (Client) — Type pills, university dropdown, price range, capacity filter
+  - `VenueCard` (Server) — Photo card: name, university, type badge, location, capacity, price ("Free" or "฿X/hr"), "Request-based" badge
+- `VenueDetail` (Server) — Photos, description, amenities, capacity, hours, rules, price, venue manager name. "Request This Venue" button
+  - `ActiveRequestsList` (Server) — Current open requests for this venue with interest counts (so users can join existing requests instead of creating new ones)
 
 **Backend routes:**
 
 | Route | Method | Logic |
 |-------|--------|-------|
-| `app/api/facilities` | GET | List with filters (type, university, price, availability) |
-| `app/api/facilities/[id]` | GET | Detail with bookings for next 14 days |
-| `app/api/facilities/[id]/availability` | GET | Available time slots for a specific date |
+| `app/api/facilities` | GET | List with filters (type, university, price, capacity) |
+| `app/api/facilities/[id]` | GET | Detail with venue manager info and active requests |
 
-### SF2: Booking Flow
+### SF2: Booking Request & Interest
 
-- `BookingReviewPanel` (Client) — Summary panel: facility, date, time, duration, calculated price. Confirm/Cancel buttons
-- `BookingConfirmation` (Client) — Success: QR code display, facility details, entry instructions
+- `BookingRequestForm` (Client) — Event title, description, desired date/time range, expected attendance, purpose/category. Venue pre-selected from detail page
+- `RequestCard` (Server) — Public proposal: event title, requester name + trust badge, venue, date, interest count, status badge
+  - `InterestButton` (Client) — "I'd attend" toggle with count. Heart or Hand icon. Optimistic update
+  - `InterestBar` (Client) — Progress bar showing current interest vs venue threshold
+- `BookingConfirmation` (Client) — After approval: QR code display, venue details, entry instructions
   - `QrCodeDisplay` (Client) [shared] — Renders QR code from string value
 
 **Backend routes:**
 
 | Route | Method | Logic |
 |-------|--------|-------|
-| `app/api/bookings` | POST | Create booking via `$transaction`: verify slot available, no overlap, trust >= -5, generate QR. Notify |
+| `app/api/booking-requests` | POST | Create request. Validate user is verified. Link to venue |
+| `app/api/booking-requests` | GET | List open requests. Filter by venue, status. Paginated |
+| `app/api/booking-requests/[id]` | GET | Request detail with interest count and interested users |
+| `app/api/booking-requests/[id]/interest` | POST | Toggle interest. Update count. Check threshold → notify venue manager if met |
+| `app/api/booking-requests/[id]/submit-review` | POST | Requester manually submits for review before threshold |
+
+### SF3: Venue Manager Dashboard
+
+- `VenueManagerDashboard` (Server) — Summary stats + list of requests for managed venues, grouped by status
+  - `ManagerRequestCard` (Client) — Requester info + trust badge, event details, interest count + bar, requested dates. Approve/Reject buttons
+    - `ApproveRequestModal` (Client) — Confirm date/time, optional message. On confirm: creates booking + QR
+    - `RejectRequestModal` (Client) — Reason textarea, optional alternative date suggestion
+  - `VenueManagerStats` (Server) — Total requests, approval rate, upcoming confirmed events
+
+**Backend routes:**
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/booking-requests/managed` | GET | Venue manager's requests across all managed venues. Filter by status |
+| `app/api/booking-requests/[id]/approve` | POST | Approve: set APPROVED, generate QR, create booking, notify requester + interested users |
+| `app/api/booking-requests/[id]/reject` | POST | Reject: set REJECTED, send reason to requester |
+
+### SF4: My Bookings & Status
+
+- `MyBookings` (Server) — Two sections: Active Requests and Confirmed Bookings
+  - `MyRequestCard` (Client) — Event title, venue, date, status badge (Open/Under Review/Approved/Rejected), interest count, cancel button
+  - `BookingCard` (Client) — Venue, date, time, status badge, "Show QR" button, cancel button with trust penalty warning
+    - `QrCodeDisplay` (Client) [shared] — Renders QR code from string value
+
+**Backend routes:**
+
+| Route | Method | Logic |
+|-------|--------|-------|
+| `app/api/booking-requests/mine` | GET | Current user's requests (all statuses) |
+| `app/api/bookings` | GET | Current user's confirmed bookings (upcoming + past) |
+| `app/api/bookings/[id]` | GET | Booking detail with QR code (ownership check) |
+| `app/api/booking-requests/[id]/cancel` | POST | Cancel request. No penalty if before approval. -2 trust if after approval within 24h |
 | `app/api/bookings/[id]/checkin` | POST | QR scan check-in. Validate QR matches booking |
 
-### SF3: Cancellation & Trust
-
-- `CancelBookingButton` (Client) — Handles cancellation with trust penalty warning if within 24h
-
-**Backend routes:**
-
-| Route | Method | Logic |
-|-------|--------|-------|
-| `app/api/bookings/[id]/cancel` | POST | Cancel. If within 24h: -2 trust score. Set CANCELLED. Free slot. Notify |
-
-### SF4: My Bookings
-
-- `MyBookings` (Server) — Two sections: Upcoming and Past bookings
-  - `BookingCard` (Client) — Facility, date, time, status badge, "Show QR" button, "Cancel" button with 24h warning
-    - `QrCodeDisplay` (Client) [shared] — Renders QR code from string value
-    - `CancelBookingButton` (Client) — Handles cancellation with trust penalty warning if within 24h
-
-**Backend routes:**
-
-| Route | Method | Logic |
-|-------|--------|-------|
-| `app/api/bookings` | GET | Current user's bookings (upcoming + past) |
-| `app/api/bookings/[id]` | GET | Booking detail with QR code (ownership check) |
-
 ## Edge Cases & Constraints
-- No double-booking: if two users try to book the same slot simultaneously, use a database transaction to ensure only one succeeds.
-- Past time slots cannot be selected.
-- Bookings must fall within facility operating hours.
-- Maximum booking duration: 4 hours per session (configurable per facility).
-- Users with trust score < -5 cannot make new bookings (show a clear message explaining why).
-- Handle facilities that are temporarily unavailable (maintenance, holidays).
-- Show clear "No available slots" message when everything is booked.
+- If two users create overlapping requests for the same venue/time, venue manager decides which to approve.
+- Venue managers should respond to requests within 48 hours — show "Awaiting response" indicator.
+- Past time slots cannot be requested.
+- Requests must fall within venue operating hours.
+- Users with trust score < -5 cannot create booking requests (show a clear message explaining why).
+- Handle venues that are temporarily unavailable (maintenance, holidays).
+- Show clear messaging when a request is rejected — include the venue manager's reason.
+- Interested users who expressed "I'd attend" are NOT committed — it's a soft signal, not a binding RSVP.
+- Venue manager can manage multiple venues from a single dashboard.
+- If a venue has no manager assigned, show "Contact university directly" message.
 
 ## Acceptance Criteria
-- Users can browse facilities with real-time availability. [FAC-DIR-01, FAC-DIR-06]
-- Booking flow creates a reservation and generates a QR code. [FAC-BOOK-03, FAC-BOOK-04]
-- Double-booking is prevented at the database level. [FAC-BOOK-03]
-- Cancellation within 24 hours works and updates trust score. [FAC-CANCEL-01, FAC-CANCEL-02]
-- "My Bookings" page shows accurate booking history. [FAC-MYBK-01, FAC-MYBK-02]
-- The interface is fully responsive on mobile and desktop.
-- All validation errors show clear, helpful messages.
+- Users can browse venues with clear information and manager details [FAC-DIR-01, FAC-DIR-05]
+- Booking request flow creates a public proposal that others can express interest in [FAC-REQ-01, FAC-REQ-03, FAC-REQ-04]
+- Interest threshold triggers venue manager notification [FAC-REQ-07]
+- Venue managers can approve/reject requests from their dashboard [FAC-MGR-01, FAC-MGR-03, FAC-MGR-04]
+- Approval generates QR code and notifies all interested users [FAC-MGR-05]
+- "My Bookings" shows request lifecycle and confirmed bookings [FAC-MYBK-01, FAC-MYBK-02]
+- Cancellation policy enforced with trust score penalties [FAC-MYBK-04, FAC-MYBK-05, FAC-MYBK-06]
+- The interface is fully responsive on mobile and desktop
+- All validation errors show clear, helpful messages
 
 ## Definition of Done
-- End-to-end booking flow works: browse -> select -> book -> QR code
-- Calendar and availability logic is accurate
-- QR code generation is integrated
+- End-to-end flow works: browse → request → gather interest → venue approval → QR code
+- Venue manager dashboard functional with approve/reject actions
+- Interest system with threshold tracking works
+- QR code generation on approval
 - Cancellation policy enforced with trust score updates
-- Double-booking prevented via Prisma $transaction
 - Responsive design on all devices
 - Atomic commits used throughout implementation
