@@ -1,6 +1,6 @@
 # C.7: Non-University Events Organizer — Implementation Plan
 
-**Spec:** `docs/specs/non-university-events-organizer-2026-03-31.md`
+**Spec:** `docs/specs/non-university-events/overview.md`
 **Prefix:** COM | **Sub-features:** 3 | **Requirements:** 17
 **Dependencies:** C.1 (shared event CRUD/RSVP), C.2 (trust gate)
 **Sprints:** 3 | **Tasks:** 14

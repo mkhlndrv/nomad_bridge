@@ -1,6 +1,6 @@
 # C.3: Collaboration Organize Board — Implementation Plan
 
-**Spec:** `docs/specs/collaboration-board-2026-03-31.md`
+**Spec:** `docs/specs/collaboration-board/overview.md`
 **Prefix:** COL | **Sub-features:** 4 | **Requirements:** 24
 **Dependencies:** C.2 (trust, feedback), C.6 (invite/apply notifications)
 **Sprints:** 4 | **Tasks:** 23

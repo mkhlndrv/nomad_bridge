@@ -1,6 +1,6 @@
 # C.2: Participant Profile & Verification — Implementation Plan
 
-**Spec:** `docs/specs/participant-profile-2026-03-31.md`
+**Spec:** `docs/specs/participant-profile/overview.md`
 **Prefix:** PRF | **Sub-features:** 4 | **Requirements:** 26
 **Dependencies:** None (foundational — built first)
 **Sprints:** 3 | **Tasks:** 17

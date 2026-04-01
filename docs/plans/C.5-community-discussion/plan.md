@@ -1,6 +1,6 @@
 # C.5: Community Discussion Board — Implementation Plan
 
-**Spec:** `docs/specs/community-discussion-board-2026-03-31.md`
+**Spec:** `docs/specs/community-discussion/overview.md`
 **Prefix:** FRM | **Sub-features:** 4 | **Requirements:** 21
 **Dependencies:** C.2 (TrustScoreBadge)
 **Sprints:** 4 | **Tasks:** 24

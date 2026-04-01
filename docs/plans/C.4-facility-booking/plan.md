@@ -1,6 +1,6 @@
 # C.4: Campus Facility Access Booking — Implementation Plan
 
-**Spec:** `docs/specs/facility-booking-2026-03-31.md`
+**Spec:** `docs/specs/facility-booking/overview.md`
 **Prefix:** FAC | **Sub-features:** 4 | **Requirements:** 26
 **Dependencies:** C.2 (trust checks), C.6 (notifications)
 **Sprints:** 5 | **Tasks:** 27

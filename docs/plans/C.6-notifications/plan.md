@@ -1,6 +1,6 @@
 # C.6: Notifications (Email, LINE & Telegram) — Implementation Plan
 
-**Spec:** `docs/specs/notifications-2026-03-31.md`
+**Spec:** `docs/specs/notifications/overview.md`
 **Prefix:** NTF | **Sub-features:** 5 | **Requirements:** 35
 **Dependencies:** None (infrastructure)
 **Sprints:** 3 | **Tasks:** 18

@@ -1,6 +1,6 @@
 # C.8: Manage Recordings (tl;dv) — Implementation Plan
 
-**Spec:** `docs/specs/manage-recordings-2026-03-31.md`
+**Spec:** `docs/specs/manage-recordings/overview.md`
 **Prefix:** REC | **Sub-features:** 4 | **Requirements:** 24
 **Dependencies:** C.1 (event context, attendee lists for access control)
 **Sprints:** 4 | **Tasks:** 22

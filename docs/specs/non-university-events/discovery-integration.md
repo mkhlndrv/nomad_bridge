@@ -22,4 +22,4 @@
 
 ## API Routes
 
-No dedicated routes — uses existing event feed API with `isCommunity` filter. See [event-discovery-rsvp-2026-03-31.md](../event-discovery-rsvp-2026-03-31.md).
+No dedicated routes — uses existing event feed API with `isCommunity` filter. See [Event Discovery & RSVP](../event-discovery-rsvp/overview.md).

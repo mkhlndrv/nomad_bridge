@@ -29,4 +29,4 @@
 | `app/api/events/[id]/checkin` | POST | Manual check-in toggle (organizer only). Awards +5 trust to attendee |
 | `app/api/events/[id]/announce` | POST | Send announcement to all RSVPed users (organizer only) |
 
-*Note: Most event CRUD is shared with the Event Discovery & RSVP feature (see [event-discovery-rsvp-2026-03-31.md](../event-discovery-rsvp-2026-03-31.md)).*
+*Note: Most event CRUD is shared with the Event Discovery & RSVP feature (see [Event Discovery & RSVP](../event-discovery-rsvp/overview.md)).*

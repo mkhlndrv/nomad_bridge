@@ -1,6 +1,6 @@
 # C.1: Event Discovery & RSVP — Implementation Plan
 
-**Spec:** `docs/specs/event-discovery-rsvp-2026-03-31.md`
+**Spec:** `docs/specs/event-discovery-rsvp/overview.md`
 **Prefix:** EVT | **Sub-features:** 4 | **Requirements:** 23
 **Dependencies:** C.2 (trust score checks, profile display)
 **Sprints:** 4 | **Tasks:** 23

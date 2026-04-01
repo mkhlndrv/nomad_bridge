@@ -32,16 +32,16 @@ C.6 Notifications ────┬──► C.4 Facility Booking
 
 ## Component Summary
 
-| ID | Component | Sprints | Tasks | Spec File |
-|----|-----------|---------|-------|-----------|
-| C.2 | Participant Profile & Verification | 3 | 17 | participant-profile-2026-03-31.md |
-| C.1 | Event Discovery & RSVP | 4 | 23 | event-discovery-rsvp-2026-03-31.md |
-| C.6 | Notifications (Email, LINE, Telegram) | 3 | 18 | notifications-2026-03-31.md |
-| C.4 | Campus Facility Access Booking | 5 | 27 | facility-booking-2026-03-31.md |
-| C.7 | Non-University Events Organizer | 3 | 14 | non-university-events-organizer-2026-03-31.md |
-| C.3 | Collaboration Organize Board | 4 | 23 | collaboration-board-2026-03-31.md |
-| C.5 | Community Discussion Board | 4 | 24 | community-discussion-board-2026-03-31.md |
-| C.8 | Manage Recordings (tl;dv) | 4 | 22 | manage-recordings-2026-03-31.md |
+| ID | Component | Sprints | Tasks | Spec Folder |
+|----|-----------|---------|-------|-------------|
+| C.2 | Participant Profile & Verification | 3 | 17 | participant-profile/overview.md |
+| C.1 | Event Discovery & RSVP | 4 | 23 | event-discovery-rsvp/overview.md |
+| C.6 | Notifications (Email, LINE, Telegram) | 3 | 18 | notifications/overview.md |
+| C.4 | Campus Facility Access Booking | 5 | 27 | facility-booking/overview.md |
+| C.7 | Non-University Events Organizer | 3 | 14 | non-university-events/overview.md |
+| C.3 | Collaboration Organize Board | 4 | 23 | collaboration-board/overview.md |
+| C.5 | Community Discussion Board | 4 | 24 | community-discussion/overview.md |
+| C.8 | Manage Recordings (tl;dv) | 4 | 22 | manage-recordings/overview.md |
 
 ## Milestone Definitions
 
