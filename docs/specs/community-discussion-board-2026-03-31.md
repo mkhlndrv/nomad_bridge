@@ -41,9 +41,11 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 
 | ID | Requirement | Priority |
 |----|------------|----------|
-| FRM-INTERACT-01 | Upvote threads and replies (simple count, no downvotes — keep it positive) | Must |
+| FRM-INTERACT-01 | Upvote and downvote threads and replies (Reddit-style net score voting) | Must |
 | FRM-INTERACT-02 | Author of a thread can mark one reply as "Best Answer" (highlighted with a badge) | Should |
 | FRM-INTERACT-03 | Users can bookmark threads for quick access later | Should |
+| FRM-INTERACT-04 | Display net score (upvotes minus downvotes) on threads and replies | Must |
+| FRM-INTERACT-05 | Posts with net score below -5 are visually dimmed/collapsed but still expandable | Should |
 
 ## Component Breakdown
 
@@ -74,8 +76,8 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 ### SF3: Replies & Discussion
 
 - `ThreadView` (Server) — Original post + paginated replies (20/page). Best Answer highlighted. Reply form at bottom
-  - `ThreadPost` (Server) — Author avatar + name + trust badge, formatted content, upvote count, timestamp
-  - `Reply` (Server) — Author info, content, timestamp, upvote count. Green badge if Best Answer
+  - `ThreadPost` (Server) — Author avatar + name + trust badge, formatted content, net score, timestamp. Dimmed if score < -5
+  - `Reply` (Server) — Author info, content, timestamp, net score. Green badge if Best Answer. Dimmed if score < -5
   - `ReplyForm` (Client) — Inline reply: RichTextEditor (5000 char limit). Rate limited (30s)
 
 **Backend routes:**
@@ -87,7 +89,7 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 
 ### SF4: Thread Interactions
 
-- `UpvoteButton` (Client) — Toggle upvote with count. ThumbsUp icon. Optimistic update
+- `VoteButtons` (Client) — Up arrow + net score + down arrow. User can upvote OR downvote (clicking one removes the other). Optimistic update
 - `BookmarkButton` (Client) — Toggle bookmark. Bookmark icon
 - `MarkBestAnswerButton` (Client) — Thread author only. CheckCircle icon. One best answer per thread
 
@@ -95,9 +97,9 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 
 | Route | Method | Logic |
 |-------|--------|-------|
-| `app/api/forum/[id]/upvote` | POST | Toggle upvote on thread. Award +3 trust on threshold |
+| `app/api/forum/[id]/vote` | POST | Vote on thread: body `{ direction: "up" | "down" | "none" }`. Tracks upvotes and downvotes separately. No trust score impact from downvotes |
 | `app/api/forum/[id]/bookmark` | POST | Toggle bookmark |
-| `app/api/forum/replies/[id]/upvote` | POST | Toggle upvote on reply |
+| `app/api/forum/replies/[id]/vote` | POST | Vote on reply: same direction body. No trust score impact from downvotes |
 | `app/api/forum/replies/[id]/best-answer` | POST | Mark as best answer (thread author only) |
 
 ## Edge Cases & Constraints
@@ -109,10 +111,14 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 - Deleted threads/replies should show "[removed]" placeholder, not disappear (preserves conversation context).
 - Only the author can edit their post (within 15 minutes of posting).
 - Admin can delete or pin any thread.
+- User can only upvote OR downvote a post (clicking one removes the other).
+- Author cannot vote on their own posts.
+- Downvotes do NOT affect the author's trust score — only post ranking/visibility.
+- Collapsed posts (net score below -5) are still accessible via "Show collapsed" click.
 
 ## Acceptance Criteria
 - Users can browse threads without logging in [FRM-FEED-01, FRM-FEED-04]
-- Logged-in users can create threads, reply, upvote, and bookmark [FRM-CREATE-01, FRM-REPLY-02, FRM-INTERACT-01]
+- Logged-in users can create threads, reply, upvote, downvote, and bookmark [FRM-CREATE-01, FRM-REPLY-02, FRM-INTERACT-01, FRM-INTERACT-04]
 - Categories filter correctly [FRM-FEED-04]
 - Search returns relevant threads [FRM-FEED-05]
 - Thread sorting by recent activity works correctly [FRM-FEED-01]
@@ -123,7 +129,7 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 ## Definition of Done
 - Forum feed with category filtering and search works
 - Thread creation and reply flow works end-to-end
-- Upvotes, bookmarks, and "Best Answer" marking functional
+- Upvotes, downvotes, bookmarks, and "Best Answer" marking functional
 - Pagination for long threads
 - Responsive design on all devices
 - Basic spam prevention (rate limiting, character limits)
