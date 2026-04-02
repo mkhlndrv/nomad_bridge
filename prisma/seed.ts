@@ -304,6 +304,177 @@ async function main() {
     ],
   });
 
+  // ─── Collaborations (C.3) ────────────────────────────────
+  const collab1 = await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-1",
+      title: "Guest Lecture: Introduction to Blockchain for Business",
+      description: "Looking for an experienced blockchain developer to give a 90-minute guest lecture to our MBA students on practical blockchain applications in supply chain and finance.",
+      collaborationType: "GUEST_LECTURE",
+      format: "IN_PERSON",
+      compensation: "PAID",
+      tags: "blockchain,fintech,MBA",
+      status: "OPEN",
+      preferredDateRange: "2026-05-01 to 2026-05-31",
+      expectedAudience: 120,
+      department: "Faculty of Commerce and Accountancy",
+      talkFormat: "Lecture + Q&A",
+      userId: chula.id,
+    },
+  });
+
+  const collab2 = await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-2",
+      title: "Research: NLP for Thai Language Processing",
+      description: "Seeking a data scientist experienced with transformer models for a joint research project on Thai language NLP. 3-month commitment with potential for publication.",
+      collaborationType: "SKILL_EXCHANGE",
+      format: "HYBRID",
+      compensation: "FACILITY_ACCESS",
+      tags: "NLP,Thai,AI,research,transformers",
+      status: "IN_DISCUSSION",
+      requiredSkills: "Python,PyTorch,NLP,Transformers",
+      estimatedDuration: "3 months",
+      deliverables: "Research paper, Thai NLP model, Dataset",
+      userId: chula.id,
+    },
+  });
+
+  await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-3",
+      title: "UX/UI Design Workshop for Students",
+      description: "I'm a product designer with 8 years of experience and I'd love to run a hands-on workshop on design thinking and Figma prototyping for university students.",
+      collaborationType: "WORKSHOP",
+      format: "IN_PERSON",
+      compensation: "FREE",
+      tags: "UX,UI,design,Figma,workshop",
+      status: "OPEN",
+      preferredDateRange: "2026-06-01 to 2026-06-30",
+      expectedAudience: 30,
+      userId: alice.id,
+    },
+  });
+
+  await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-4",
+      title: "Startup Mentorship: From Idea to MVP",
+      description: "Serial entrepreneur offering mentorship to student teams working on tech startups. Weekly 1-hour sessions for 2 months covering ideation, validation, and MVP development.",
+      collaborationType: "MENTORSHIP",
+      format: "ONLINE",
+      compensation: "FREE",
+      tags: "startup,mentorship,MVP,entrepreneurship",
+      status: "MATCHED",
+      frequency: "Weekly",
+      topicArea: "Startup Development",
+      commitmentDuration: "2 months",
+      userId: bob.id,
+    },
+  });
+
+  await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-5",
+      title: "Full-Stack Developer for Student Project",
+      description: "CS department needs a full-stack developer to co-lead a student capstone project building a campus sustainability tracker app.",
+      collaborationType: "PROJECT",
+      format: "HYBRID",
+      compensation: "PAID",
+      tags: "fullstack,React,Node,sustainability",
+      status: "OPEN",
+      projectDescription: "Campus sustainability tracking web application",
+      requiredSkills: "React,Node.js,PostgreSQL,TypeScript",
+      estimatedDuration: "4 months",
+      deliverables: "Working web app, Documentation, Student training",
+      userId: chula.id,
+    },
+  });
+
+  await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-6",
+      title: "Digital Marketing Guest Lecture Series",
+      description: "Thammasat Business School looking for 3 different guest lecturers to cover SEO, Social Media Marketing, and Content Strategy over 3 weeks.",
+      collaborationType: "GUEST_LECTURE",
+      format: "IN_PERSON",
+      compensation: "PAID",
+      tags: "marketing,SEO,social media,content strategy",
+      status: "OPEN",
+      preferredDateRange: "2026-05-15 to 2026-06-05",
+      expectedAudience: 80,
+      department: "Faculty of Business Administration",
+      talkFormat: "Lecture series (3 sessions)",
+      userId: chula.id,
+    },
+  });
+
+  await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-7",
+      title: "Python Data Science Workshop",
+      description: "Offering a 2-day intensive workshop on Python for data science — pandas, visualization, and basic ML. Great for engineering students.",
+      collaborationType: "WORKSHOP",
+      format: "IN_PERSON",
+      compensation: "FACILITY_ACCESS",
+      tags: "python,data science,pandas,ML",
+      status: "COMPLETED",
+      preferredDateRange: "2025-11-01 to 2025-11-02",
+      expectedAudience: 25,
+      userId: alice.id,
+    },
+  });
+
+  await prisma.collaborationOpportunity.create({
+    data: {
+      id: "collab-8",
+      title: "Thai Culture Exchange for Remote Workers",
+      description: "University cultural club offering to pair nomads with Thai students for cultural exchange and language practice. Meet weekly at campus cafes.",
+      collaborationType: "SKILL_EXCHANGE",
+      format: "IN_PERSON",
+      compensation: "FREE",
+      tags: "Thai,culture,language,exchange",
+      status: "OPEN",
+      frequency: "Weekly",
+      topicArea: "Thai Language & Culture",
+      commitmentDuration: "1 month",
+      userId: chula.id,
+    },
+  });
+
+  // Collaboration Applications
+  await prisma.collaborationApplication.create({
+    data: {
+      id: "collab-app-1",
+      message: "I have 5 years of blockchain development experience and have given talks at ETHGlobal. Would love to share practical insights with your students.",
+      status: "PENDING",
+      collaborationId: collab1.id,
+      userId: alice.id,
+    },
+  });
+
+  await prisma.collaborationApplication.create({
+    data: {
+      id: "collab-app-2",
+      message: "I work extensively with Thai NLP at my current research lab. Have published 2 papers on multilingual transformers.",
+      status: "ACCEPTED",
+      collaborationId: collab2.id,
+      userId: bob.id,
+    },
+  });
+
+  // Collaboration Feedback (on completed collab-7)
+  await prisma.collaborationFeedback.create({
+    data: {
+      id: "collab-feedback-1",
+      rating: 5,
+      comment: "Excellent workshop! Alice explained complex concepts in a very approachable way. Students loved the hands-on exercises.",
+      collaborationId: "collab-7",
+      reviewerId: chula.id,
+      revieweeId: alice.id,
+    },
+  });
+
   // ─── Facilities (C.4) ──────────────────────────────────
   await prisma.facility.create({
     data: {
