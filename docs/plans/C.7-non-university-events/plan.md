@@ -21,7 +21,7 @@
 - [ ] Community event creation form works end-to-end
 - [ ] Trust gate prevents users with score < 10
 - [ ] Active event limit (5) enforced
-- [ ] Events saved with isCommunity=true and eventType
+- [ ] Events saved with isCommunity=true and communityEventType
 
 ---
 

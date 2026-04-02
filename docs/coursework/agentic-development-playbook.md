@@ -1,5 +1,6 @@
-cat > docs/specs/event-discovery-rsvp.md
-ridge
+# Agentic Development Playbook
+
+> ⚠️ **Coursework document** — not an implementation reference. Canonical docs are in `docs/specs/` and `docs/plans/`.
 
 ## Tool Selection
 

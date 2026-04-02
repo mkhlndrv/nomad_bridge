@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "NomadBridge Documentation Manifest",
+  "description": "Machine-readable index for agent document retrieval. See docs/specs/_index.md § Documentation Authority for priority rules.",
+  "lastUpdated": "2026-04-02",
+  "authority": {
+    "description": "When docs disagree, higher-priority sources win.",
+    "priority": [
+      { "rank": 1, "path": "docs/target-schema.prisma", "scope": "Models, fields, enums, relations" },
+      { "rank": 2, "path": "docs/specs/**", "scope": "Feature requirements, edge cases, acceptance criteria" },
+      { "rank": 3, "path": "docs/knowledge-base.md", "scope": "Business rules, constants, locked architecture decisions" },
+      { "rank": 4, "path": "CLAUDE.md", "scope": "Conventions, API patterns, auth, file structure" },
+      { "rank": 5, "path": "docs/plans/**", "scope": "Task sequencing, sprint breakdown, test maps" }
+    ],
+    "nonCanonical": [
+      { "path": "docs/coursework/**", "reason": "Human-audience course deliverables" }
+    ]
+  },
+  "entryPoints": {
+    "agentStart": "CLAUDE.md",
+    "frameworkWarnings": "AGENTS.md",
+    "featureIndex": "docs/specs/_index.md",
+    "businessRules": "docs/knowledge-base.md",
+    "targetSchema": "docs/target-schema.prisma",
+    "currentSchema": "prisma/schema.prisma",
+    "wavePlan": "docs/plans/overview.md",
+    "releaseGate": "docs/plans/release-gate.md",
+    "seedData": "docs/specs/project-setup.md"
+  },
+  "features": [
+    {
+      "id": "C.1",
+      "name": "Event Discovery & RSVP",
+      "prefix": "EVT",
+      "specFolder": "docs/specs/event-discovery-rsvp/",
+      "planFolder": "docs/plans/C.1-event-discovery-rsvp/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Event Feed & Discovery", "spec": "docs/specs/event-discovery-rsvp/event-feed.md" },
+        { "id": "SF2", "name": "RSVP System", "spec": "docs/specs/event-discovery-rsvp/rsvp-system.md" },
+        { "id": "SF3", "name": "Event Photo Upload", "spec": "docs/specs/event-discovery-rsvp/event-photos.md" },
+        { "id": "SF4", "name": "Post-Event Materials", "spec": "docs/specs/event-discovery-rsvp/post-event-materials.md" }
+      ],
+      "models": ["Event", "EventRsvp", "EventPhoto", "EventMaterial"],
+      "dependsOn": ["C.2", "C.6"]
+    },
+    {
+      "id": "C.2",
+      "name": "Participant Profile & Verification",
+      "prefix": "PRF",
+      "specFolder": "docs/specs/participant-profile/",
+      "planFolder": "docs/plans/C.2-participant-profile/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Profile Display", "spec": "docs/specs/participant-profile/profile-display.md" },
+        { "id": "SF2", "name": "Profile Editing", "spec": "docs/specs/participant-profile/profile-editing.md" },
+        { "id": "SF3", "name": "Trust Score System", "spec": "docs/specs/participant-profile/trust-score.md" },
+        { "id": "SF4", "name": "Verification Levels", "spec": "docs/specs/participant-profile/verification-levels.md" }
+      ],
+      "models": ["User", "TrustScoreLog"],
+      "dependsOn": []
+    },
+    {
+      "id": "C.3",
+      "name": "Collaboration Organize Board",
+      "prefix": "COL",
+      "specFolder": "docs/specs/collaboration-board/",
+      "planFolder": "docs/plans/C.3-collaboration-board/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Board & Discovery", "spec": "docs/specs/collaboration-board/board-discovery.md" },
+        { "id": "SF2", "name": "Posting", "spec": "docs/specs/collaboration-board/posting.md" },
+        { "id": "SF3", "name": "Matching & Application", "spec": "docs/specs/collaboration-board/matching.md" },
+        { "id": "SF4", "name": "Feedback System", "spec": "docs/specs/collaboration-board/feedback.md" }
+      ],
+      "models": ["CollaborationOpportunity", "CollaborationApplication", "CollaborationFeedback"],
+      "dependsOn": ["C.2", "C.6"]
+    },
+    {
+      "id": "C.4",
+      "name": "Campus Facility Access Booking",
+      "prefix": "FAC",
+      "specFolder": "docs/specs/facility-booking/",
+      "planFolder": "docs/plans/C.4-facility-booking/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Venue Directory", "spec": "docs/specs/facility-booking/venue-directory.md" },
+        { "id": "SF2", "name": "Booking Request & Interest", "spec": "docs/specs/facility-booking/booking-request.md" },
+        { "id": "SF3", "name": "Venue Manager Dashboard", "spec": "docs/specs/facility-booking/venue-manager.md" },
+        { "id": "SF4", "name": "My Bookings & Status", "spec": "docs/specs/facility-booking/my-bookings.md" }
+      ],
+      "models": ["Facility", "BookingRequest", "BookingInterest", "Booking"],
+      "dependsOn": ["C.2", "C.6"]
+    },
+    {
+      "id": "C.5",
+      "name": "Community Discussion Board",
+      "prefix": "FRM",
+      "specFolder": "docs/specs/community-discussion/",
+      "planFolder": "docs/plans/C.5-community-discussion/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Forum Feed", "spec": "docs/specs/community-discussion/forum-feed.md" },
+        { "id": "SF2", "name": "Thread Creation", "spec": "docs/specs/community-discussion/thread-creation.md" },
+        { "id": "SF3", "name": "Replies & Discussion", "spec": "docs/specs/community-discussion/replies.md" },
+        { "id": "SF4", "name": "Thread Interactions", "spec": "docs/specs/community-discussion/thread-interactions.md" }
+      ],
+      "models": ["ForumPost", "ForumReply", "ForumVote", "ForumBookmark"],
+      "dependsOn": ["C.2", "C.6"]
+    },
+    {
+      "id": "C.6",
+      "name": "Notifications",
+      "prefix": "NTF",
+      "specFolder": "docs/specs/notifications/",
+      "planFolder": "docs/plans/C.6-notifications/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Notification Triggers", "spec": "docs/specs/notifications/triggers.md" },
+        { "id": "SF2", "name": "Email Notifications", "spec": "docs/specs/notifications/email.md" },
+        { "id": "SF3", "name": "LINE Notifications", "spec": "docs/specs/notifications/line.md" },
+        { "id": "SF4", "name": "Telegram Notifications", "spec": "docs/specs/notifications/telegram.md" },
+        { "id": "SF5", "name": "In-App Notification Center", "spec": "docs/specs/notifications/notification-center.md" }
+      ],
+      "models": ["Notification", "NotificationPreference"],
+      "dependsOn": []
+    },
+    {
+      "id": "C.7",
+      "name": "Non-University Events Organizer",
+      "prefix": "COM",
+      "specFolder": "docs/specs/non-university-events/",
+      "planFolder": "docs/plans/C.7-non-university-events/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Community Event Creation", "spec": "docs/specs/non-university-events/event-creation.md" },
+        { "id": "SF2", "name": "Discovery Integration", "spec": "docs/specs/non-university-events/discovery-integration.md" },
+        { "id": "SF3", "name": "Organizer Dashboard", "spec": "docs/specs/non-university-events/organizer-dashboard.md" }
+      ],
+      "models": ["Event"],
+      "dependsOn": ["C.1", "C.2", "C.6"]
+    },
+    {
+      "id": "C.8",
+      "name": "Manage Recordings (tl;dv)",
+      "prefix": "REC",
+      "specFolder": "docs/specs/manage-recordings/",
+      "planFolder": "docs/plans/C.8-manage-recordings/",
+      "subFeatures": [
+        { "id": "SF1", "name": "Recording Upload & Linking", "spec": "docs/specs/manage-recordings/upload-linking.md" },
+        { "id": "SF2", "name": "tl;dv Integration", "spec": "docs/specs/manage-recordings/tldv-integration.md" },
+        { "id": "SF3", "name": "Recording Library", "spec": "docs/specs/manage-recordings/recording-library.md" },
+        { "id": "SF4", "name": "Viewing Experience", "spec": "docs/specs/manage-recordings/viewing-experience.md" }
+      ],
+      "models": ["Recording", "RecordingNote"],
+      "dependsOn": ["C.1"]
+    }
+  ],
+  "sharedLibraries": [
+    { "path": "lib/prisma.ts", "purpose": "Prisma client singleton", "status": "exists" },
+    { "path": "lib/utils.ts", "purpose": "Date formatting (Bangkok TZ), tag parsing", "status": "exists" },
+    { "path": "lib/trust-score.ts", "purpose": "adjustTrustScore(), calculateVerificationLevel()", "status": "planned" },
+    { "path": "lib/notifications.ts", "purpose": "sendNotification() orchestrator", "status": "planned" },
+    { "path": "lib/mock-email.ts", "purpose": "Console-logged email mock", "status": "planned" },
+    { "path": "lib/mock-line.ts", "purpose": "Console-logged LINE mock", "status": "planned" },
+    { "path": "lib/mock-telegram.ts", "purpose": "Console-logged Telegram mock", "status": "planned" },
+    { "path": "lib/notification-types.ts", "purpose": "Type definitions, category mapping", "status": "planned" }
+  ],
+  "sharedComponents": [
+    { "name": "TrustScoreBadge", "owner": "C.2", "usedBy": ["C.1", "C.3", "C.5", "C.7"] },
+    { "name": "CapacityBar", "owner": "C.1", "usedBy": ["C.1"] },
+    { "name": "QrCodeDisplay", "owner": "C.4", "usedBy": ["C.1", "C.4"] },
+    { "name": "VoteButtons", "owner": "C.5", "usedBy": ["C.5"] },
+    { "name": "InterestButton", "owner": "C.4", "usedBy": ["C.4"] }
+  ],
+  "testStructure": {
+    "framework": "vitest",
+    "configRef": "docs/specs/project-setup.md",
+    "directories": {
+      "unit": "__tests__/unit/",
+      "integration": "__tests__/integration/",
+      "helpers": "__tests__/helpers/"
+    },
+    "commands": {
+      "run": "npx vitest run",
+      "watch": "npx vitest",
+      "coverage": "npx vitest run --coverage"
+    }
+  }
+}

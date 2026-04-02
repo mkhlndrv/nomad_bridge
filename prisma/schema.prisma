@@ -6,6 +6,26 @@ datasource db {
   provider = "sqlite"
 }
 
+// ============================================================================
+// ⚠️  CURRENT STATE — NOT THE TARGET
+// ============================================================================
+//
+// This schema has 6 models and 6 enums (legacy starter).
+// Target state: docs/target-schema.prisma (21 models, 19 enums).
+//
+// Known divergences:
+//   - EventCategory uses legacy values (SEMINAR/SPORTS/CULTURAL/OTHER)
+//     Target values: ACADEMIC, NETWORKING, WORKSHOP, SOCIAL, CAREER
+//   - LectureOpportunity → replaced by CollaborationOpportunity in target
+//   - Role missing VENUE_MANAGER
+//   - BookingStatus missing COMPLETED
+//   - EventRsvp missing status, waitlist, check-in fields
+//   - User missing skills, avatarUrl, location, emailVerified, verificationLevel
+//   - 15 models not yet added (see target-schema for full list)
+//
+// Apply changes per task file (T.X.XX), then run: npx prisma db push
+// ============================================================================
+
 // ─── Enums ───────────────────────────────────────────────
 
 enum Role {

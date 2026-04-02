@@ -6,12 +6,16 @@ Connects digital nomads in Bangkok with universities for events, facility access
 
 | Document | Purpose |
 |----------|---------|
-| [CLAUDE.md](CLAUDE.md) | Agent rules: stack, auth mock, API contracts, git, testing |
-| [AGENTS.md](AGENTS.md) | Next.js / Prisma / React version notes |
-| [docs/specs/\_index.md](docs/specs/_index.md) | Feature specs and cross-dependencies |
+| [CLAUDE.md](CLAUDE.md) | Agent rules: stack, auth mock, API contracts, doc authority, git, testing |
+| [AGENTS.md](AGENTS.md) | Next.js / Prisma / React / Tailwind version notes |
+| [docs/specs/\_index.md](docs/specs/_index.md) | Feature specs, **doc authority ladder**, cross-dependencies |
 | [docs/plans/overview.md](docs/plans/overview.md) | Implementation waves and task index |
 | [docs/knowledge-base.md](docs/knowledge-base.md) | Business rules, enums, **locked architecture decisions** |
-| [docs/target-schema.prisma](docs/target-schema.prisma) | Canonical target database schema |
+| [docs/target-schema.prisma](docs/target-schema.prisma) | Canonical target database schema (21 models, 19 enums) |
+| [docs/manifest.json](docs/manifest.json) | Machine-readable doc index for programmatic retrieval |
+| [docs/plans/release-gate.md](docs/plans/release-gate.md) | Sprint completion checklist |
+
+> Files in `docs/coursework/` are human-audience course deliverables — not implementation references.
 
 ## Development
 
@@ -24,6 +28,3 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Run tests: `npx vitest run`.
 
----
-
-This app uses [Next.js](https://nextjs.org) (App Router). Default template notes from `create-next-app` were replaced by the links above.

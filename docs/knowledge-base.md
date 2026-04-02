@@ -182,9 +182,10 @@ All notifications are dispatched immediately when the triggering action occurs (
 - **Notification types:** RSVP_CONFIRMATION, EVENT_REMINDER, EVENT_CANCELLED, WAITLIST_PROMOTED, MATERIALS_AVAILABLE, BOOKING_CONFIRMATION, BOOKING_REMINDER, BOOKING_CANCELLED, LECTURE_INVITE, LECTURE_APPLICATION, LECTURE_FEEDBACK, TRUST_SCORE_CHANGE, FORUM_REPLY
 - **Recording sources:** TLDV, YOUTUBE, VIMEO, UPLOAD
 - **Recording visibility:** PUBLIC, ATTENDEES_ONLY, UNLISTED
-
-> Note: The current `prisma/schema.prisma` may differ from the target (e.g. legacy EventCategory values). The canonical target is `docs/target-schema.prisma`. Event categories and `CommunityEventType` are defined under **Locked architecture decisions** below.
 - **Collaboration types:** GUEST_LECTURE, WORKSHOP, MENTORSHIP, PROJECT, SKILL_EXCHANGE
 - **User roles:** NOMAD, UNIVERSITY, ADMIN, VENUE_MANAGER
 - **Verification levels:** NONE, EMAIL_VERIFIED, COMMUNITY_VERIFIED
 - **Booking status:** PENDING, CONFIRMED, CANCELLED, COMPLETED
+- **Vote direction:** UP, DOWN
+
+> **Note:** The current `prisma/schema.prisma` may lag behind the target. The canonical target is `docs/target-schema.prisma`. Apply target changes per task file, then run `npx prisma db push`.
