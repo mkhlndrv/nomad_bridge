@@ -1,6 +1,8 @@
 import { MapPin } from "lucide-react";
 import ProfileAvatar from "./ProfileAvatar";
 import TrustScoreBadge from "../shared/TrustScoreBadge";
+import VerificationBadge from "../shared/VerificationBadge";
+import { calculateVerificationLevel, type VerificationLevelValue } from "@/lib/trust-score";
 
 interface ProfileHeaderProps {
   user: {
@@ -10,7 +12,7 @@ interface ProfileHeaderProps {
     trustScore: number;
     avatarUrl?: string | null;
     location?: string | null;
-    verificationLevel: string;
+    emailVerified: boolean;
   };
   isOwnProfile?: boolean;
 }
@@ -32,7 +34,12 @@ const roleLabels: Record<string, string> = {
 export default function ProfileHeader({ user, isOwnProfile = false }: ProfileHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
-      <ProfileAvatar name={user.name} avatarUrl={user.avatarUrl} size="lg" />
+      <ProfileAvatar
+        name={user.name}
+        avatarUrl={user.avatarUrl}
+        size="lg"
+        verificationLevel={calculateVerificationLevel(user) as VerificationLevelValue}
+      />
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <h1 className="text-2xl font-bold text-gray-900 truncate">{user.name}</h1>
@@ -42,11 +49,7 @@ export default function ProfileHeader({ user, isOwnProfile = false }: ProfileHea
             {roleLabels[user.role] ?? user.role}
           </span>
           <TrustScoreBadge score={user.trustScore} />
-          {user.verificationLevel === "COMMUNITY_VERIFIED" && (
-            <span className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-xs font-medium">
-              ✓ Verified
-            </span>
-          )}
+          <VerificationBadge level={calculateVerificationLevel(user)} size="md" />
         </div>
 
         {user.location && (

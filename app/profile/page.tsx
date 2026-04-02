@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import SkillTags from "@/components/profile/SkillTags";
 import ActivitySummary from "@/components/profile/ActivitySummary";
+import TrustScoreCard from "@/components/profile/TrustScoreCard";
+import { calculateVerificationLevel } from "@/lib/trust-score";
 
 export default async function MyProfilePage() {
   const headersList = await headers();
@@ -29,10 +31,13 @@ export default async function MyProfilePage() {
       prisma.collaborationOpportunity.count({ where: { userId } }),
     ]);
 
+  const verificationLevel = calculateVerificationLevel(user);
+
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 space-y-8">
       <ProfileHeader user={user} isOwnProfile />
       <SkillTags skills={user.skills} isOwnProfile />
+      <TrustScoreCard trustScore={user.trustScore} verificationLevel={verificationLevel} />
       <ActivitySummary
         eventsAttended={eventsAttended}
         lecturesGiven={collaborationsCreated}
