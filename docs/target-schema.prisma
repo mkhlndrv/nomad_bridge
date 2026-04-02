@@ -19,7 +19,6 @@
 //
 // See also:
 //   - docs/knowledge-base.md (business rules, trust score rules, enums)
-//   - docs/specs/shared-contracts.md (API contracts, component interfaces)
 //   - docs/adrs/005-event-category-alignment.md (EventCategory decision)
 //
 // Last updated: 2026-04-01
@@ -166,7 +165,7 @@ enum NotificationChannel {
 }
 
 // Notification preference categories (5 categories for 13 triggers)
-// Mapping: see docs/specs/shared-contracts.md
+// Mapping: see docs/knowledge-base.md (Notification Categories)
 enum NotificationCategory {
   EVENTS    // RSVP_CONFIRMATION, EVENT_REMINDER, EVENT_CANCELLED, WAITLIST_PROMOTED, MATERIALS_AVAILABLE
   BOOKINGS  // BOOKING_CONFIRMATION, BOOKING_REMINDER, BOOKING_CANCELLED

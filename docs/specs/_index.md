@@ -71,7 +71,6 @@
 | Document | Description |
 |----------|-------------|
 | [Target Schema](../target-schema.prisma) | Complete target Prisma schema — 21 models, 18 enums. Canonical reference for all agents |
-| [Shared Contracts](shared-contracts.md) | API response formats, 56 endpoint summary, component interfaces, file upload limits, QR format, notification mappings, constants |
 | [Project Setup](project-setup.md) | Seed data definitions (5 users, 4 events, etc.), Vitest configuration, test directory structure, test helpers |
 
 ## Cross-Feature Dependencies

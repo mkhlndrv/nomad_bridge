@@ -38,7 +38,6 @@ docs/
 ├── target-schema.prisma            # Complete target Prisma schema (canonical)
 ├── specs/                          # Feature specifications
 │   ├── _index.md                   # Master index with cross-deps & shared resources
-│   ├── shared-contracts.md         # API response formats, component interfaces, file upload limits
 │   ├── project-setup.md            # Seed data definitions, vitest config, test helpers
 │   └── <feature>/                  # One folder per feature
 │       ├── overview.md             # Intent, sub-feature links, edge cases, DoD
@@ -202,7 +201,6 @@ Default test users:
 
 - Prioritize clarity and simplicity.
 - Reference `docs/target-schema.prisma` for the complete target database schema.
-- Reference `docs/specs/shared-contracts.md` for API response formats, component interfaces, file upload limits, and cross-cutting contracts.
 - Reference `docs/specs/project-setup.md` for seed data, test configuration, and test helpers.
 - Reference `docs/knowledge-base.md` for project context, business rules, and constants.
 - Reference `docs/specs/_index.md` for feature index and cross-dependencies.

@@ -141,84 +141,23 @@ All users receive default preferences across all 5 notification categories:
 
 ## Vitest Configuration
 
-### Required devDependencies
-
-```
-vitest (latest)
-@testing-library/react (for component tests, if needed later)
-```
-
-### vitest.config.ts
-
-```typescript
-import { defineConfig } from 'vitest/config'
-import path from 'path'
-
-export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'node',
-    include: ['__tests__/**/*.test.ts'],
-    coverage: {
-      provider: 'v8',
-      include: ['lib/**', 'app/api/**'],
-    },
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, '.'),
-    },
-  },
-})
-```
-
-### package.json scripts to add
-
-```json
-{
-  "test": "vitest run",
-  "test:watch": "vitest",
-  "test:coverage": "vitest run --coverage"
-}
-```
-
-### Prisma seed configuration
-
-Add to `package.json`:
-
-```json
-{
-  "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
-  }
-}
-```
+- **devDependencies:** vitest (latest), @testing-library/react (for component tests if needed later)
+- **Test environment:** node
+- **Test include pattern:** `__tests__/**/*.test.ts`
+- **Coverage:** v8 provider, covering `lib/**` and `app/api/**`
+- **Path alias:** `@` → project root
+- **Scripts:** `test` (vitest run), `test:watch` (vitest), `test:coverage` (vitest run --coverage)
+- **Prisma seed command:** `npx tsx prisma/seed.ts` (configured in package.json `prisma.seed`)
 
 ---
 
 ## Test Directory Structure
 
-```
-__tests__/
-├── unit/
-│   ├── trust-score.test.ts       — adjustTrustScore, calculateVerificationLevel
-│   ├── utils.test.ts             — formatDateBangkok, formatTimeBangkok, parseTags
-│   ├── rsvp-logic.test.ts        — capacity checks, waitlist promotion (FIFO)
-│   └── forum-logic.test.ts       — net score, collapse threshold, edit window
-├── integration/
-│   ├── events-api.test.ts        — GET/POST /api/events, GET/PATCH /api/events/[id]
-│   ├── rsvp-api.test.ts          — POST/DELETE /api/events/[id]/rsvp
-│   ├── profile-api.test.ts       — GET/PATCH /api/profile, POST /api/profile/avatar
-│   ├── forum-api.test.ts         — CRUD /api/forum, /api/forum/[id]/vote, /replies
-│   ├── booking-api.test.ts       — /api/booking-requests, /api/facilities
-│   ├── collaboration-api.test.ts — /api/collaborations CRUD + apply/respond
-│   ├── notifications-api.test.ts — /api/notifications, preferences, mark-read
-│   └── recordings-api.test.ts    — /api/recordings CRUD
-└── helpers/
-    ├── prisma.ts                 — test Prisma client (uses same SQLite, reset between tests)
-    ├── request.ts                — createMockRequest(path, options) with x-user-id header
-    └── seed.ts                   — seedTestData() — inserts seed users + minimal test data
-```
+| Directory | Purpose | Example Files |
+|-----------|---------|---------------|
+| `__tests__/unit/` | Business logic | trust-score, utils, rsvp-logic, forum-logic |
+| `__tests__/integration/` | API route handlers | events-api, rsvp-api, profile-api, forum-api, booking-api, collaboration-api, notifications-api, recordings-api |
+| `__tests__/helpers/` | Shared test utilities | prisma, request, seed |
 
 ---
 
@@ -232,7 +171,7 @@ __tests__/
 
 ### `__tests__/helpers/request.ts`
 
-- Export `createMockRequest(path: string, options: { method?, body?, userId?, headers? })`.
+- Export `createMockRequest(path, options)` with method, body, userId, and headers options.
 - Returns a standard `Request` object with the `x-user-id` header set.
 - Default userId: `'user-alice'` (so tests run as Alice by default).
 
