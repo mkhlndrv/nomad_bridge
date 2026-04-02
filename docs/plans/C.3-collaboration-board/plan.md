@@ -76,3 +76,10 @@
 - [ ] Feedback updates trust: +3 for 4-5 stars, -2 for 1-2 stars
 - [ ] Completion awards +10 trust to nomad
 - [ ] All 24 COL-* requirements satisfied
+
+### 🛑 M3 Stop Point (Phase 3 - Track B)
+**A nomad can post an offer/request and another user can apply/invite/respond.**
+
+### 📋 M3 Contract Check
+- [ ] Ensure the 5 collaboration types mirror the knowledge base definition exactly (SkillShare vs Hackathon vs LanguageExchange vs etc).
+- [ ] `TrustScore` updates from feedback are handled atomically via Prisma `$transaction`.

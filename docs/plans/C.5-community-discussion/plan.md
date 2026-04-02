@@ -79,3 +79,10 @@
 - [ ] Rate limiting: 30s between posts
 - [ ] No self-voting, no trust score impact from votes
 - [ ] All 21 FRM-* requirements satisfied
+
+### 🛑 M3 Stop Point (Phase 3 - Track C)
+**Browse → create → reply → vote/bookmark/best answer works, and rate limiting is user-visible.**
+
+### 📋 M3 Contract Check
+- [ ] `targetType` explicitly matches knowledge base definitions and schemas (preventing POST vs THREAD mismatches).
+- [ ] Rate limiting ("wait 30s") is clearly enforced natively.

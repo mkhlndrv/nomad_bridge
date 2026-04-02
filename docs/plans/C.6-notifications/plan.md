@@ -26,6 +26,10 @@
 - [ ] Mock Telegram logs Markdown <300 char message to console
 - [ ] sendNotification: checks preferences, creates in-app record, dispatches channels
 
+### 📋 M1 Contract Check (Phase 2-S1)
+- [ ] Notification types and categories strictly match `docs/knowledge-base.md`.
+- [ ] Duplicate detection idempotency explicitly uses `(userId, type, referenceId)` exactly as specified natively without timing variables.
+
 ---
 
 ## Sprint 2 — In-App Notification Center [M2: Basic Functionality]
@@ -45,6 +49,9 @@
 - [ ] Click notification navigates to relevant page + marks read
 - [ ] "Mark all read" clears unread count
 - [ ] Polling updates badge every 30s
+
+### 🛑 M2 Stop Point (Phase 2-S2)
+**Users can see unread count and a list of notifications in-app.**
 
 ---
 
@@ -66,3 +73,6 @@
 - [ ] RSVP and booking actions trigger appropriate notifications
 - [ ] All 35 NTF-* requirements satisfied
 - [ ] All tests passing
+
+### 🛑 M3 Stop Point (Phase 2-S3)
+**User toggles actually affect delivery (Email/LINE/Telegram mocks + in-app creation).**

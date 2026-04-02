@@ -31,6 +31,13 @@
 - [ ] Profile page renders all sections without errors
 - [ ] Responsive layout check at mobile/desktop breakpoints
 
+### 🛑 M1 Stop Point (Phase 1-S1)
+**Profile foundations established: roles and verification rules match the target schema exactly.**
+
+### 📋 M1 Contract Check
+- [ ] `Role` enum correctly matches `docs/target-schema.prisma` values (UNIVERSITY vs NOMAD vs VENUE_MANAGER).
+- [ ] Seed data uses the exact Enums from the knowledge base, avoiding plain strings.
+
 ---
 
 ## Sprint 2 — API Routes + Data Connection [Milestone M2: Basic Functionality]

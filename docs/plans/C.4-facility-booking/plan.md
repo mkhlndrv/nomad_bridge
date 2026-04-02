@@ -88,3 +88,10 @@
 - [ ] Cancellation policy: no penalty before approval, -2 trust after, -3 no-show
 - [ ] Trust gate: score < -5 cannot create requests
 - [ ] All 26 FAC-* requirements satisfied
+
+### 🛑 M3 Stop Point (Phase 3 - Track A)
+**Users can create booking requests, threshold triggers manager review, and cancel penalties are enforced.**
+
+### 📋 M3 Contract Check
+- [ ] Trust gate strictly prevents requests when `trustScore < -5`.
+- [ ] Cancellation window and trust penalties natively match business rules mapped in knowledge base.

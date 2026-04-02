@@ -53,3 +53,10 @@
 - [ ] Manual check-in awards +5 trust score
 - [ ] Announcements sent to all RSVPed attendees
 - [ ] All 17 COM-* requirements satisfied
+
+### 🛑 M3 Stop Point (Phase 4-S1)
+**Community events are operational and visibly distinct.**
+
+### 📋 M3 Contract Check
+- [ ] Community events use `Event.isCommunity === true` plus the `CommunityEventType` enum (avoiding free-text strings).
+- [ ] Trust gate is strictly enforced: `trustScore >= 10`.

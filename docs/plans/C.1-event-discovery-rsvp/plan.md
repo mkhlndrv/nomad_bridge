@@ -44,6 +44,12 @@
 - [ ] Duplicate RSVP returns 409, past event returns 400
 - [ ] EventFeed shows real data, EventDetail page renders all info
 
+### 🛑 M2 Stop Point (Phase 1-S2)
+**A user can browse events and open a detail page with correct capacity display.**
+
+### 📋 M2 Contract Check
+- [ ] Schema capacities (`rsvpCount` vs `capacity`) are correctly incremented natively or via transactions, avoiding race conditions.
+
 ---
 
 ## Sprint 3 — RSVP Interactions [towards M3]
@@ -56,7 +62,12 @@
 | [T.1.16](tasks/T.1.16-build-waitlist-indicator.md) | Build WaitlistIndicator | 15m | T.1.15 |
 | [T.1.17](tasks/T.1.17-build-filter-bar-interactivity.md) | Build EventFilterBar interactivity | 25m | T.1.07 |
 
----
+### 🛑 M3 Entry Stop Point (Phase 1-S3)
+**RSVP full → waitlist position is stable and understandable.** 
+
+### 📋 M3 Entry Contract Check
+- [ ] `waitlistPosition` correctly calculated and nullable for non-waitlist.
+- [ ] Duplicate RSVP validation holds under waitlist conditions.
 
 ## Sprint 4 — Photos, Materials, Polish [M3: Full Functionality]
 
