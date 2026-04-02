@@ -48,8 +48,7 @@ docs/
 │       ├── plan.md                 # Sprint breakdown, task tables, DoD checklists
 │       ├── test-map.md             # Unit + integration test definitions
 │       └── tasks/T.<N>.<NN>-*.md  # Individual task files (~168 total)
-├── knowledge-base.md               # Project context, entities, NFRs, constants
-└── adrs/                           # Architecture decision records (5 ADRs)
+└── knowledge-base.md               # Project context, locked decisions, entities, NFRs
 ```
 
 - Specs are organized by **feature** (folder) → **sub-feature** (SF .md files)
@@ -202,7 +201,7 @@ Default test users:
 - Prioritize clarity and simplicity.
 - Reference `docs/target-schema.prisma` for the complete target database schema.
 - Reference `docs/specs/project-setup.md` for seed data, test configuration, and test helpers.
-- Reference `docs/knowledge-base.md` for project context, business rules, and constants.
+- Reference `docs/knowledge-base.md` for project context, business rules, locked architecture decisions, and constants.
 - Reference `docs/specs/_index.md` for feature index and cross-dependencies.
 - Reference `docs/plans/overview.md` for implementation wave plan.
 - Ask for clarification if requirements are ambiguous.

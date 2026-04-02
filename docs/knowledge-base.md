@@ -69,7 +69,7 @@ A platform that connects digital nomads in Bangkok with local universities (Chul
 
 ## Locked architecture decisions
 
-Cross-cutting choices that should not be “simplified away” without updating this section and `docs/target-schema.prisma`.
+Cross-cutting choices that should not be “simplified away” without updating this section and `docs/target-schema.prisma`. (Former standalone ADR files under `docs/adrs/` were folded here.)
 
 1. **Explicit `EventRsvp` model (not implicit many-to-many):** The User ↔ Event RSVP relation uses a real `EventRsvp` table so we can enforce `@@unique([userId, eventId])`, store `createdAt`, `status`, waitlist data, and check-in fields.
 

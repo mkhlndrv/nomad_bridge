@@ -28,9 +28,8 @@ nomad_bridge/
 │   │   ├── facility-booking.md
 │   │   └── skill-exchange-board.md
 │   │
-│   ├── adrs/                          ◄── AGENT: decision records
-│   │   ├── index.md                   ◄── NEW: ADR index
-│   │   └── 001-explicit-rsvp-join.md  ◄── NEW: example ADR
+│   │   (NomadBridge uses **Locked architecture decisions** in
+│   │    docs/knowledge-base.md instead of a separate adrs/ tree.)
 │   │
 │   ├── runbooks/                      ◄── NEW: operational procedures
 │   │   └── booking-conflicts.md       ◄── NEW: example runbook
@@ -59,7 +58,7 @@ nomad_bridge/
 | `README.md` | Human | Onboarding | Update on major architecture change | Lead developer |
 | `docs/knowledge-base.md` | Agent + Human | Context | Update when features added/removed | Lead developer |
 | `docs/specs/*.md` | Agent (primary) | Feature contracts | Update before implementation begins | Feature owner |
-| `docs/adrs/*.md` | Agent + Human | Decision records | Immutable once accepted (supersede, don't edit) | Decision maker |
+| `docs/knowledge-base.md` § Locked architecture decisions | Agent + Human | Decision records | Update when reversing a cross-cutting choice | Decision maker |
 | `docs/runbooks/*.md` | Agent (primary) | Operational | Update after every incident | On-call / feature owner |
 | `docs/manifest.json` | Agent (retrieval) | Index | Auto-update on every doc change | CI / lead developer |
 | `prisma/schema.prisma` | Agent | Data contract | Update via migrations only | Lead developer |
@@ -123,7 +122,7 @@ components/[Feature]Card.tsx   → Reusable UI (PascalCase)
 lib/[utility].ts               → Shared helpers (camelCase)
 prisma/schema.prisma           → Data models
 docs/specs/                    → Feature specifications
-docs/adrs/                     → Architecture decisions
+docs/knowledge-base.md       → Architecture decisions (see § Locked architecture decisions)
 docs/runbooks/                 → Operational procedures
 
 ## Entity Reference
@@ -195,9 +194,11 @@ The `url` field in the datasource block is no longer supported.
 
 ---
 
-## 3. ADR Index + Example
+## 3. Architecture decisions (example: former ADR pattern)
 
-### ADR Index (`docs/adrs/index.md`)
+> **NomadBridge today:** decisions live in `docs/knowledge-base.md` under **Locked architecture decisions**, not in `docs/adrs/`. The block below illustrates the ADR *style* this course module discusses.
+
+### Example index (historical pattern)
 
 ```markdown
 # Architecture Decision Records
@@ -320,11 +321,9 @@ model EventRsvp {
   multiple events. A single field can't represent this.
 ```
 
-### Why ADRs Matter for Agents
+### Why recorded decisions matter for agents
 
-When an agent encounters the `EventRsvp` model and considers refactoring it to an implicit relation (simpler code), ADR-001 explains *why* the explicit approach was chosen. Without this record, an agent might "simplify" the schema and break duplicate prevention.
-
-ADRs are **immutable context** — they persist the reasoning behind decisions that code alone cannot convey.
+When an agent encounters the `EventRsvp` model and considers refactoring it to an implicit relation (simpler code), a written decision explains *why* the explicit approach was chosen. Without that record, an agent might "simplify" the schema and break duplicate prevention. NomadBridge captures this in `docs/knowledge-base.md` instead of per-file ADRs.
 
 ---
 
@@ -605,21 +604,22 @@ interface ChunkHint {
       "depends_on": ["docs/specs/facility-booking.md", "prisma/schema.prisma"]
     },
     {
-      "path": "docs/adrs/001-explicit-rsvp-join.md",
-      "title": "ADR-001: Explicit EventRsvp Join Table",
-      "type": "adr",
+      "path": "docs/knowledge-base.md",
+      "title": "NomadBridge Knowledge Base",
+      "type": "reference",
       "audience": "both",
-      "features": ["event-rsvp"],
-      "entities": ["EventRsvp", "Event", "User"],
+      "features": ["all"],
+      "entities": ["User", "Event", "EventRsvp", "Facility", "Booking", "ForumPost"],
       "owner": "lead-developer",
-      "freshness": "immutable",
-      "last_updated": "2026-03-25",
+      "freshness": "on_change",
+      "last_updated": "2026-04-02",
       "chunk_hint": {
-        "strategy": "whole_file",
-        "max_tokens": 1200
+        "strategy": "by_heading",
+        "max_tokens": 1200,
+        "split_at": "##"
       },
-      "summary": "Why we use explicit EventRsvp model instead of Prisma implicit many-to-many",
-      "depends_on": ["prisma/schema.prisma"]
+      "summary": "Project context, locked architecture decisions, enums, and business rules",
+      "depends_on": ["docs/target-schema.prisma"]
     },
     {
       "path": "prisma/schema.prisma",
@@ -649,7 +649,7 @@ interface ChunkHint {
 
 1. Agent reads `manifest.json`
 2. Filters by `features` containing `"event-rsvp"`
-3. Ranks by `type`: spec first, then runbook, then ADR
+3. Ranks by `type`: spec first, then runbook, then reference (architecture decisions)
 4. Retrieves chunks from the top-ranked documents using `chunk_hint`
 5. Has full context without reading every file in the project
 
@@ -683,9 +683,8 @@ This checklist must pass before any feature PR is merged. It ensures documentati
       section reflects the change
 
 ### Required for NON-OBVIOUS DECISIONS
-- [ ] **ADR written:** `docs/adrs/NNN-<title>.md` explaining context, decision,
-      and consequences
-- [ ] **ADR index updated:** `docs/adrs/index.md` has a row for the new ADR
+- [ ] **Architecture decision recorded:** `docs/knowledge-base.md` § *Locked architecture decisions*
+      updated with context and consequences (or supersede the old bullet in place)
 
 ### Required for OPERATIONAL CHANGES
 - [ ] **Runbook exists or updated:** If the change affects how the system is operated,
@@ -709,7 +708,7 @@ Documentation debt compounds faster than technical debt in agentic projects. Whe
 
 1. **Stale spec → wrong implementation.** The agent builds what the spec says, not what the code needs. Without a gate ensuring specs are updated, the spec and code drift apart silently.
 
-2. **Missing ADR → reverted decisions.** An agent sees "simpler" code and refactors it, undoing a deliberate design choice. The ADR would have prevented this — but only if it exists.
+2. **Missing decision record → reverted choices.** An agent sees "simpler" code and refactors it, undoing a deliberate design. A short entry under **Locked architecture decisions** prevents that drift.
 
 3. **No runbook → longer incidents.** When something breaks at 2 AM, the developer (or agent) troubleshooting has no diagnostic steps. They reverse-engineer the fix from code, taking 10x longer.
 
@@ -725,7 +724,7 @@ The release gate makes documentation a **first-class deliverable** — not an af
 |-------------|---------|------------------------|
 | Repository Document Map | §1 | Agent vs. human audience separation, freshness policies, ownership |
 | CLAUDE.md Outline | §2 | Agent consumption patterns, structured sections, query-oriented layout |
-| ADR Index + Example | §3 | Immutable decision records, preventing agent-driven regressions |
+| Architecture decisions | §3 | Recorded cross-cutting choices, preventing agent-driven regressions |
 | Runbook Outline | §4 | Predictable headings, copy-paste SQL/code, escalation paths |
 | Retrieval Manifest | §5 | Machine-readable index, chunk hints, feature tagging, dependency graph |
 | Release-Gate Checklist | §6 | Documentation as first-class deliverable, preventing drift |
