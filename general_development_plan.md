@@ -1,4 +1,4 @@
-# NomadBridge — General Development Plan (C.1–C.4)
+# NomadBridge — General Development Plan (C.1–C.8)
 
 ## Components to Implement
 
@@ -44,6 +44,28 @@
 15. **C.4-S4** — Manager dashboard → commit+push
 16. **C.4-S5** — My bookings + polish → commit+push
 
+### C.5: Community Discussion Board (4 sprints) — ✅ COMPLETE
+- Sprint 1: Forum schema, seed data, ThreadCard, ForumFilterBar, ForumFeed page
+- Sprint 2: GET/POST forum APIs, thread detail API, CreateThreadForm, thread view page
+- Sprint 3: Reply API, vote APIs (thread + reply), VoteButtons component
+- Sprint 4: Bookmark API, best answer API, ReplyItem, ThreadPost
+
+### C.6: Notifications (3 sprints) — ✅ COMPLETE
+- Sprint 1: Notification/Preference models, type definitions, mock email/LINE/Telegram, sendNotification orchestrator
+- Sprint 2: Notification APIs (list, unread-count, mark-read), NotificationBell, NotificationDropdown
+- Sprint 3: Preferences API, PreferencesForm, full notifications page, wired into layout
+
+### C.7: Non-University Events (3 sprints) — ✅ COMPLETE
+- Sprint 1: Event schema updates (isCommunity, eventType, checkedIn), community event API with trust gate
+- Sprint 2: Events discovery page with tabs, CreateEventForm, RSVP API
+- Sprint 3: Organizer dashboard, check-in API, attendee management
+
+### C.8: Manage Recordings (4 sprints) — ✅ COMPLETE
+- Sprint 1: Recording/RecordingNote models, recording API
+- Sprint 2: Recording library page with grid layout
+- Sprint 3: Recording detail page with YouTube embed, transcript, highlights
+- Sprint 4: RecordingNotes component with timestamped personal notes
+
 ## Status
 - [x] Plan created
 - [ ] C.2 Sprint 1 complete
@@ -62,3 +84,7 @@
 - [ ] C.4 Sprint 3 complete
 - [ ] C.4 Sprint 4 complete
 - [ ] C.4 Sprint 5 complete
+- [x] C.5 Complete (all 4 sprints)
+- [x] C.6 Complete (all 3 sprints)
+- [x] C.7 Complete (all 3 sprints)
+- [x] C.8 Complete (all 4 sprints)
