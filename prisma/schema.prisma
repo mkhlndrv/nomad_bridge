@@ -12,6 +12,28 @@ enum Role {
   NOMAD
   UNIVERSITY
   ADMIN
+  VENUE_MANAGER
+}
+
+enum VerificationLevel {
+  NONE
+  EMAIL_VERIFIED
+  COMMUNITY_VERIFIED
+}
+
+enum EventCategory {
+  ACADEMIC
+  NETWORKING
+  WORKSHOP
+  SOCIAL
+  CAREER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  PAST
 }
 
 enum FacilityType {
@@ -26,26 +48,37 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
-}
-
-enum LectureType {
-  OFFER
-  REQUEST
-}
-
-enum LectureStatus {
-  OPEN
-  MATCHED
   COMPLETED
 }
 
-enum EventCategory {
+enum BookingRequestStatus {
+  OPEN
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum CollaborationType {
+  GUEST_LECTURE
   WORKSHOP
-  SEMINAR
-  SOCIAL
-  SPORTS
-  CULTURAL
-  OTHER
+  MENTORSHIP
+  PROJECT
+  SKILL_EXCHANGE
+}
+
+enum CollaborationStatus {
+  OPEN
+  IN_DISCUSSION
+  MATCHED
+  COMPLETED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 enum ForumCategory {
@@ -56,25 +89,75 @@ enum ForumCategory {
   COWORKING
 }
 
+enum RecordingSourceType {
+  TLDV
+  YOUTUBE
+  VIMEO
+  UPLOAD
+}
+
+enum RecordingVisibility {
+  PUBLIC
+  ATTENDEES_ONLY
+  UNLISTED
+}
+
 // ─── Models ──────────────────────────────────────────────
 
+// ── User & Profile (C.2) ────────────────────────────────
+
 model User {
-  id         String   @id @default(cuid())
-  name       String
-  email      String   @unique
-  bio        String?
-  role       Role     @default(NOMAD)
-  trustScore Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                String            @id @default(cuid())
+  name              String
+  email             String            @unique
+  bio               String?
+  role              Role              @default(NOMAD)
+  trustScore        Int               @default(0)
+  skills            String?
+  avatarUrl         String?
+  location          String?
+  emailVerified     Boolean           @default(false)
+  verificationLevel VerificationLevel @default(NONE)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   // Relations
-  createdEvents Event[]              @relation("EventCreator")
-  rsvps         EventRsvp[]
-  bookings      Booking[]
-  lectures      LectureOpportunity[]
-  forumPosts    ForumPost[]
+  createdEvents             Event[]                    @relation("EventCreator")
+  rsvps                     EventRsvp[]
+  uploadedPhotos            EventPhoto[]
+  uploadedMaterials         EventMaterial[]
+  bookings                  Booking[]
+  bookingRequests           BookingRequest[]
+  bookingInterests          BookingInterest[]
+  collaborations            CollaborationOpportunity[]
+  collaborationApplications CollaborationApplication[]
+  feedbackGiven             CollaborationFeedback[]    @relation("FeedbackReviewer")
+  feedbackReceived          CollaborationFeedback[]    @relation("FeedbackReviewee")
+  forumPosts                ForumPost[]
+  forumReplies              ForumReply[]
+  forumVotes                ForumVote[]
+  forumBookmarks            ForumBookmark[]
+  trustScoreLogs            TrustScoreLog[]
+  notifications             Notification[]
+  notificationPreferences   NotificationPreference[]
+  uploadedRecordings        Recording[]
+  recordingNotes            RecordingNote[]
+  managedFacilities         Facility[]                 @relation("FacilityManager")
 }
+
+model TrustScoreLog {
+  id        String   @id @default(cuid())
+  delta     Int
+  reason    String
+  newScore  Int
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+// ── Events (C.1) ────────────────────────────────────────
 
 model Event {
   id          String        @id @default(cuid())
@@ -84,21 +167,27 @@ model Event {
   venue       String
   capacity    Int           @default(50)
   university  String
-  category    EventCategory @default(OTHER)
+  category    EventCategory @default(ACADEMIC)
   imageUrl    String?
-  tags        String?       // Comma-separated tags (SQLite has no array type)
+  tags        String?
   rsvpCount   Int           @default(0)
+  status      EventStatus   @default(PUBLISHED)
   createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // Relations
-  creatorId String
-  creator   User        @relation("EventCreator", fields: [creatorId], references: [id])
-  rsvps     EventRsvp[]
+  creatorId  String
+  creator    User            @relation("EventCreator", fields: [creatorId], references: [id])
+  rsvps      EventRsvp[]
+  photos     EventPhoto[]
+  materials  EventMaterial[]
+  recordings Recording[]
 }
 
 model EventRsvp {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  isWaitlisted Boolean  @default(false)
+  createdAt    DateTime @default(now())
 
   // Relations
   userId  String
@@ -109,63 +198,316 @@ model EventRsvp {
   @@unique([userId, eventId])
 }
 
-model Facility {
-  id           String       @id @default(cuid())
-  name         String
-  university   String
-  type         FacilityType @default(COWORKING)
-  description  String?
-  location     String?
-  imageUrl     String?
-  available    Boolean      @default(true)
-  pricePerHour Float        @default(0)
-  createdAt    DateTime     @default(now())
+model EventPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
 
   // Relations
-  bookings Booking[]
+  eventId      String
+  event        Event  @relation(fields: [eventId], references: [id])
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+}
+
+model EventMaterial {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  fileType  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  eventId      String
+  event        Event  @relation(fields: [eventId], references: [id])
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+}
+
+// ── Facility Booking (C.4) ──────────────────────────────
+
+model Facility {
+  id                String       @id @default(cuid())
+  name              String
+  university        String
+  type              FacilityType @default(COWORKING)
+  description       String?
+  location          String?
+  imageUrl          String?
+  available         Boolean      @default(true)
+  pricePerHour      Float        @default(0)
+  operatingHours    String?
+  amenities         String?
+  rules             String?
+  capacity          Int          @default(50)
+  interestThreshold Int          @default(5)
+  createdAt         DateTime     @default(now())
+
+  // Relations
+  managerId       String?
+  manager         User?            @relation("FacilityManager", fields: [managerId], references: [id])
+  bookings        Booking[]
+  bookingRequests BookingRequest[]
+}
+
+model BookingRequest {
+  id                 String               @id @default(cuid())
+  eventTitle         String
+  eventDescription   String?
+  proposedDate       DateTime
+  startTime          String
+  endTime            String
+  expectedAttendance Int
+  purpose            String?
+  status             BookingRequestStatus @default(OPEN)
+  rejectionReason    String?
+  interestCount      Int                  @default(0)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  // Relations
+  userId     String
+  user       User              @relation(fields: [userId], references: [id])
+  facilityId String
+  facility   Facility          @relation(fields: [facilityId], references: [id])
+  interests  BookingInterest[]
+  booking    Booking?
+}
+
+model BookingInterest {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  bookingRequestId String
+  bookingRequest   BookingRequest @relation(fields: [bookingRequestId], references: [id])
+
+  @@unique([userId, bookingRequestId])
 }
 
 model Booking {
   id        String        @id @default(cuid())
   date      DateTime
-  startTime String        // "09:00" format
-  endTime   String        // "17:00" format
+  startTime String
+  endTime   String
   status    BookingStatus @default(PENDING)
-  qrCode    String?       // Generated on confirmation
+  qrCode    String?
   createdAt DateTime      @default(now())
 
   // Relations
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  facilityId String
-  facility   Facility @relation(fields: [facilityId], references: [id])
+  userId           String
+  user             User            @relation(fields: [userId], references: [id])
+  facilityId       String
+  facility         Facility        @relation(fields: [facilityId], references: [id])
+  bookingRequestId String?         @unique
+  bookingRequest   BookingRequest? @relation(fields: [bookingRequestId], references: [id])
 }
 
-model LectureOpportunity {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  topic       String
-  type        LectureType   @default(OFFER)
-  university  String?
-  date        DateTime?
-  status      LectureStatus @default(OPEN)
-  createdAt   DateTime      @default(now())
+// ── Collaboration Board (C.3) ───────────────────────────
+
+model CollaborationOpportunity {
+  id                String              @id @default(cuid())
+  title             String
+  description       String?
+  collaborationType CollaborationType
+  format            String?
+  compensation      String?
+  tags              String?
+  status            CollaborationStatus @default(OPEN)
+
+  // Guest Lecture fields
+  preferredDateRange String?
+  expectedAudience   Int?
+  department         String?
+  talkFormat         String?
+  // Research/Project fields
+  projectDescription String?
+  requiredSkills     String?
+  estimatedDuration  String?
+  deliverables       String?
+  // Mentorship fields
+  frequency          String?
+  topicArea          String?
+  commitmentDuration String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  userId       String
+  user         User                       @relation(fields: [userId], references: [id])
+  applications CollaborationApplication[]
+  feedback     CollaborationFeedback[]
 }
+
+model CollaborationApplication {
+  id        String            @id @default(cuid())
+  message   String?
+  status    ApplicationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  // Relations
+  collaborationId String
+  collaboration   CollaborationOpportunity @relation(fields: [collaborationId], references: [id])
+  userId          String
+  user            User                     @relation(fields: [userId], references: [id])
+
+  @@unique([collaborationId, userId])
+}
+
+model CollaborationFeedback {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  collaborationId String
+  collaboration   CollaborationOpportunity @relation(fields: [collaborationId], references: [id])
+  reviewerId      String
+  reviewer        User @relation("FeedbackReviewer", fields: [reviewerId], references: [id])
+  revieweeId      String
+  reviewee        User @relation("FeedbackReviewee", fields: [revieweeId], references: [id])
+
+  @@unique([collaborationId, reviewerId])
+}
+
+// ── Forum (existing) ────────────────────────────────────
 
 model ForumPost {
-  id        String        @id @default(cuid())
+  id           String        @id @default(cuid())
+  title        String
+  content      String
+  category     ForumCategory @default(GENERAL)
+  pinned       Boolean       @default(false)
+  netScore     Int           @default(0)
+  lastActivity DateTime      @default(now())
+  isDeleted    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  replies   ForumReply[]
+  votes     ForumVote[]     @relation("ThreadVotes")
+  bookmarks ForumBookmark[]
+}
+
+model ForumReply {
+  id           String   @id @default(cuid())
+  content      String
+  netScore     Int      @default(0)
+  isBestAnswer Boolean  @default(false)
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  authorId String
+  author   User       @relation(fields: [authorId], references: [id])
+  threadId String
+  thread   ForumPost  @relation(fields: [threadId], references: [id])
+  votes    ForumVote[] @relation("ReplyVotes")
+}
+
+model ForumVote {
+  id         String @id @default(cuid())
+  targetType String // "THREAD" or "REPLY"
+  direction  String // "UP" or "DOWN"
+
+  // Relations
+  userId   String
+  user     User        @relation(fields: [userId], references: [id])
+  threadId String?
+  thread   ForumPost?  @relation("ThreadVotes", fields: [threadId], references: [id])
+  replyId  String?
+  reply    ForumReply? @relation("ReplyVotes", fields: [replyId], references: [id])
+
+  @@unique([userId, targetType, threadId])
+}
+
+model ForumBookmark {
+  id String @id @default(cuid())
+
+  // Relations
+  userId   String
+  user     User      @relation(fields: [userId], references: [id])
+  threadId String
+  thread   ForumPost @relation(fields: [threadId], references: [id])
+
+  @@unique([userId, threadId])
+}
+
+// ─── C.6: Notifications ─────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // e.g. RSVP_CONFIRMATION, EVENT_REMINDER, etc.
+  category  String   // EVENTS, BOOKINGS, LECTURES, COMMUNITY, TRUST
   title     String
-  content   String
-  category  ForumCategory @default(GENERAL)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  message   String
+  linkUrl   String?
+  read      Boolean  @default(false)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   // Relations
   userId String
   user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
+}
+
+model NotificationPreference {
+  id               String  @id @default(cuid())
+  category         String  // EVENTS, BOOKINGS, LECTURES, COMMUNITY, TRUST
+  emailEnabled     Boolean @default(true)
+  lineEnabled      Boolean @default(true)
+  telegramEnabled  Boolean @default(true)
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, category])
+}
+
+// ─── C.8: Recordings ────────────────────────────────────
+
+model Recording {
+  id           String              @id @default(cuid())
+  title        String
+  sourceType   RecordingSourceType @default(UPLOAD)
+  sourceUrl    String
+  thumbnailUrl String?
+  duration     Int                 @default(0) // seconds
+  transcript   String?
+  highlights   String?             // JSON string
+  visibility   RecordingVisibility @default(PUBLIC)
+  viewCount    Int                 @default(0)
+  sortOrder    Int                 @default(0)
+  createdAt    DateTime            @default(now())
+
+  // Relations
+  eventId    String
+  event      Event          @relation(fields: [eventId], references: [id])
+  uploaderId String
+  uploader   User           @relation(fields: [uploaderId], references: [id])
+  notes      RecordingNote[]
+}
+
+model RecordingNote {
+  id        String   @id @default(cuid())
+  content   String
+  timestamp Int      @default(0) // seconds into recording
+  createdAt DateTime @default(now())
+
+  // Relations
+  recordingId String
+  recording   Recording @relation(fields: [recordingId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
 }
