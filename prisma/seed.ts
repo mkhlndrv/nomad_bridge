@@ -200,6 +200,93 @@ async function main() {
     },
   });
 
+  const event4 = await prisma.event.create({
+    data: {
+      id: "event-4",
+      title: "AI & Machine Learning Seminar",
+      description: "Deep dive into transformer architectures and their applications in NLP. Guest speakers from Google Brain and local startups.",
+      date: new Date("2026-04-25T09:00:00Z"),
+      venue: "Mahidol University, Salaya Campus, Auditorium A",
+      capacity: 100,
+      university: "Mahidol University",
+      category: "ACADEMIC",
+      tags: "AI,machine learning,NLP,deep learning",
+      rsvpCount: 85,
+      status: "PUBLISHED",
+      creatorId: chula.id,
+    },
+  });
+
+  const event5 = await prisma.event.create({
+    data: {
+      id: "event-5",
+      title: "Startup Pitch Night",
+      description: "10 startups pitch their ideas to a panel of VCs and angel investors. Networking drinks after!",
+      date: new Date("2026-05-02T17:00:00Z"),
+      venue: "Thammasat University, Tha Prachan Campus",
+      capacity: 40,
+      university: "Thammasat University",
+      category: "CAREER",
+      tags: "startup,pitch,VC,networking",
+      rsvpCount: 40,
+      status: "PUBLISHED",
+      creatorId: alice.id,
+    },
+  });
+
+  const event6 = await prisma.event.create({
+    data: {
+      id: "event-6",
+      title: "UX Design Sprint Workshop",
+      description: "2-day intensive design sprint. Learn Google Ventures methodology hands-on.",
+      date: new Date("2026-05-10T09:00:00Z"),
+      venue: "Chulalongkorn University, Faculty of Engineering",
+      capacity: 25,
+      university: "Chulalongkorn University",
+      category: "WORKSHOP",
+      tags: "UX,design,sprint,product",
+      rsvpCount: 0,
+      status: "PUBLISHED",
+      creatorId: bob.id,
+    },
+  });
+
+  const event7 = await prisma.event.create({
+    data: {
+      id: "event-7",
+      title: "Python for Data Science (Past)",
+      description: "Introductory workshop on pandas, numpy, and matplotlib for beginners.",
+      date: new Date("2025-12-10T10:00:00Z"),
+      venue: "Mahidol University, ICT Building",
+      capacity: 30,
+      university: "Mahidol University",
+      category: "WORKSHOP",
+      tags: "python,data science,pandas",
+      rsvpCount: 28,
+      status: "PAST",
+      creatorId: chula.id,
+    },
+  });
+
+  const event8 = await prisma.event.create({
+    data: {
+      id: "event-8",
+      title: "Bangkok Networking Brunch",
+      description: "Casual Sunday brunch for nomads and locals. Great coffee, better conversations.",
+      date: new Date("2026-05-18T03:00:00Z"),
+      venue: "Roast Coffee, Thonglor",
+      capacity: 20,
+      university: "Community",
+      category: "NETWORKING",
+      tags: "networking,brunch,coffee,social",
+      rsvpCount: 14,
+      status: "PUBLISHED",
+      isCommunity: true,
+      eventType: "SOCIAL",
+      creatorId: alice.id,
+    },
+  });
+
   // ─── RSVPs ───────────────────────────────────────────
   await prisma.eventRsvp.createMany({
     data: [
@@ -208,6 +295,12 @@ async function main() {
       { userId: dave.id, eventId: event2.id },
       { userId: emma.id, eventId: event2.id },
       { userId: bob.id, eventId: event3.id },
+      { userId: alice.id, eventId: event4.id },
+      { userId: bob.id, eventId: event4.id },
+      { userId: dave.id, eventId: event4.id },
+      { userId: emma.id, eventId: event5.id },
+      { userId: alice.id, eventId: event8.id },
+      { userId: bob.id, eventId: event8.id },
     ],
   });
 
