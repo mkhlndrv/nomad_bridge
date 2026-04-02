@@ -37,7 +37,7 @@
 | [T.6.09](tasks/T.6.09-build-notification-item.md) | Build NotificationItem component | 20m | — |
 | [T.6.10](tasks/T.6.10-get-notifications-api.md) | GET /api/notifications | 25m | T.6.01 |
 | [T.6.11](tasks/T.6.11-get-unread-count-api.md) | GET /api/notifications/unread-count | 15m | T.6.10 |
-| [T.6.12](tasks/T.6.12-mark-read-api.md) | POST /api/notifications/mark-read | 20m | T.6.10 |
+| [T.6.12](tasks/T.6.12-post-mark-read-api.md) | POST /api/notifications/mark-read | 20m | T.6.10 |
 
 ### M2 DOD
 - [ ] Bell icon shows unread count badge in navbar
@@ -56,7 +56,7 @@
 | [T.6.14](tasks/T.6.14-build-notification-preferences.md) | Build NotificationPreferences | 30m | — |
 | [T.6.15](tasks/T.6.15-get-preferences-api.md) | GET /api/notifications/preferences | 15m | T.6.01 |
 | [T.6.16](tasks/T.6.16-put-preferences-api.md) | PUT /api/notifications/preferences | 20m | T.6.15 |
-| [T.6.17](tasks/T.6.17-wire-preferences.md) | Wire preferences into sendNotification | 20m | T.6.06, T.6.16 |
+| [T.6.17](tasks/T.6.17-wire-preferences-into-send.md) | Wire preferences into sendNotification | 20m | T.6.06, T.6.16 |
 | [T.6.18](tasks/T.6.18-integrate-triggers.md) | Integrate triggers with RSVP + booking | 25m | T.6.06, C.1, C.4 |
 
 ### M3 DOD
