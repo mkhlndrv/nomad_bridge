@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -7,8 +8,32 @@ import EventFilterBar from "@/components/events/EventFilterBar";
 export const metadata = { title: "Discover Events — NomadBridge" };
 export const dynamic = "force-dynamic";
 
-export default async function EventsPage() {
+export default async function EventsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
+
+  // Build filter conditions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conditions: any[] = [{ status: "PUBLISHED" }];
+  if (sp.university) conditions.push({ university: sp.university });
+  if (sp.category) conditions.push({ category: sp.category });
+  if (sp.from) conditions.push({ date: { gte: new Date(sp.from) } });
+  if (sp.to) conditions.push({ date: { lte: new Date(sp.to) } });
+  if (sp.search) {
+    conditions.push({
+      OR: [
+        { title: { contains: sp.search } },
+        { description: { contains: sp.search } },
+        { tags: { contains: sp.search } },
+      ],
+    });
+  }
+
   const events = await prisma.event.findMany({
+    where: { AND: conditions },
     orderBy: { date: "asc" },
     take: 20,
   });
@@ -29,7 +54,9 @@ export default async function EventsPage() {
       </div>
 
       <div className="mb-6">
-        <EventFilterBar />
+        <Suspense fallback={<div className="h-24 animate-pulse bg-gray-100 rounded-lg" />}>
+          <EventFilterBar />
+        </Suspense>
       </div>
 
       {events.length === 0 ? (

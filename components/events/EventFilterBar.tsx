@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Search, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 const UNIVERSITIES = [
   "All Universities",
@@ -19,27 +21,68 @@ const CATEGORIES = [
   { value: "CAREER", label: "Career" },
 ];
 
-interface EventFilterBarProps {
-  onFilter?: (filters: {
-    university: string;
-    category: string;
-    search: string;
-    dateFrom: string;
-    dateTo: string;
-  }) => void;
-}
+export default function EventFilterBar() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-export default function EventFilterBar({ onFilter }: EventFilterBarProps) {
-  const [university, setUniversity] = useState("");
-  const [category, setCategory] = useState("");
-  const [search, setSearch] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [university, setUniversity] = useState(searchParams.get("university") ?? "");
+  const [category, setCategory] = useState(searchParams.get("category") ?? "");
+  const [search, setSearch] = useState(searchParams.get("search") ?? "");
+  const [dateFrom, setDateFrom] = useState(searchParams.get("from") ?? "");
+  const [dateTo, setDateTo] = useState(searchParams.get("to") ?? "");
 
-  function emitFilter(overrides: Record<string, string> = {}) {
-    const filters = { university, category, search, dateFrom, dateTo, ...overrides };
-    onFilter?.(filters);
+  const debouncedSearch = useDebounce(search, 300);
+
+  const pushParams = useCallback(
+    (overrides: Record<string, string> = {}) => {
+      const params = new URLSearchParams(searchParams.toString());
+      const merged = { university, category, search: debouncedSearch, from: dateFrom, to: dateTo, ...overrides };
+
+      // Reset page on filter change
+      params.delete("page");
+
+      for (const [key, value] of Object.entries(merged)) {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      }
+
+      router.push(`/events?${params.toString()}`);
+    },
+    [router, searchParams, university, category, debouncedSearch, dateFrom, dateTo]
+  );
+
+  // Update URL when debounced search changes
+  useEffect(() => {
+    const currentSearch = searchParams.get("search") ?? "";
+    if (debouncedSearch !== currentSearch) {
+      pushParams({ search: debouncedSearch });
+    }
+  }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function updateFilter(key: string, value: string) {
+    const setters: Record<string, (v: string) => void> = {
+      university: setUniversity,
+      category: setCategory,
+      from: setDateFrom,
+      to: setDateTo,
+    };
+    setters[key]?.(value);
+    pushParams({ [key]: value });
   }
+
+  function clearFilters() {
+    setUniversity("");
+    setCategory("");
+    setSearch("");
+    setDateFrom("");
+    setDateTo("");
+    router.push("/events");
+  }
+
+  const hasFilters = university || category || search || dateFrom || dateTo;
 
   return (
     <div className="space-y-3">
@@ -50,14 +93,14 @@ export default function EventFilterBar({ onFilter }: EventFilterBarProps) {
           <input
             type="text"
             value={search}
-            onChange={(e) => { setSearch(e.target.value); emitFilter({ search: e.target.value }); }}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search events..."
             className="w-full rounded-lg border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <select
           value={university}
-          onChange={(e) => { setUniversity(e.target.value); emitFilter({ university: e.target.value }); }}
+          onChange={(e) => updateFilter("university", e.target.value)}
           className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         >
           {UNIVERSITIES.map((u) => (
@@ -74,7 +117,7 @@ export default function EventFilterBar({ onFilter }: EventFilterBarProps) {
           <button
             key={cat.value}
             type="button"
-            onClick={() => { setCategory(cat.value); emitFilter({ category: cat.value }); }}
+            onClick={() => updateFilter("category", category === cat.value && cat.value ? "" : cat.value)}
             className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
               category === cat.value
                 ? "bg-blue-600 text-white"
@@ -86,15 +129,15 @@ export default function EventFilterBar({ onFilter }: EventFilterBarProps) {
         ))}
       </div>
 
-      {/* Date range */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* Date range + Clear */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <label htmlFor="date-from">From</label>
           <input
             id="date-from"
             type="date"
             value={dateFrom}
-            onChange={(e) => { setDateFrom(e.target.value); emitFilter({ dateFrom: e.target.value }); }}
+            onChange={(e) => updateFilter("from", e.target.value)}
             className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -104,10 +147,19 @@ export default function EventFilterBar({ onFilter }: EventFilterBarProps) {
             id="date-to"
             type="date"
             value={dateTo}
-            onChange={(e) => { setDateTo(e.target.value); emitFilter({ dateTo: e.target.value }); }}
+            onChange={(e) => updateFilter("to", e.target.value)}
             className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+          >
+            <X className="h-3.5 w-3.5" /> Clear Filters
+          </button>
+        )}
       </div>
     </div>
   );
