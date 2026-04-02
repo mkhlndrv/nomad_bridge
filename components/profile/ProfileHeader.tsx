@@ -65,9 +65,12 @@ export default function ProfileHeader({ user, isOwnProfile = false }: ProfileHea
         )}
 
         {isOwnProfile && (
-          <button className="mt-3 inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
+          <a
+            href="/profile/edit"
+            className="mt-3 inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors"
+          >
             Edit Profile
-          </button>
+          </a>
         )}
       </div>
     </div>
