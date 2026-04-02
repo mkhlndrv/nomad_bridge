@@ -70,3 +70,89 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  const userId = request.headers.get("x-user-id");
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const required = ["title", "description", "date", "venue", "capacity", "university", "category"] as const;
+  for (const field of required) {
+    if (!body[field]) {
+      return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+    }
+  }
+
+  const capacity = parseInt(String(body.capacity));
+  if (!Number.isInteger(capacity) || capacity <= 0) {
+    return NextResponse.json({ error: "Capacity must be greater than zero" }, { status: 400 });
+  }
+
+  const eventDate = new Date(String(body.date));
+  if (isNaN(eventDate.getTime())) {
+    return NextResponse.json({ error: "Invalid date format" }, { status: 400 });
+  }
+  if (eventDate < new Date()) {
+    return NextResponse.json({ error: "Event date must be in the future" }, { status: 400 });
+  }
+
+  const category = String(body.category);
+  if (!VALID_CATEGORIES.includes(category)) {
+    return NextResponse.json({ error: `Invalid category. Must be one of: ${VALID_CATEGORIES.join(", ")}` }, { status: 400 });
+  }
+
+  // Trust score + role check
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { trustScore: true, role: true },
+  });
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  if (user.role === "NOMAD" && user.trustScore < 10) {
+    return NextResponse.json({ error: "Trust score too low to create events (minimum: 10)" }, { status: 403 });
+  }
+
+  // Max 5 active events check
+  const activeCount = await prisma.event.count({
+    where: {
+      creatorId: userId,
+      date: { gt: new Date() },
+      status: { not: "CANCELLED" },
+    },
+  });
+  if (activeCount >= 5) {
+    return NextResponse.json({ error: "Maximum 5 active events allowed" }, { status: 403 });
+  }
+
+  const tags = body.tags
+    ? String(body.tags).split(",").map((t: string) => t.trim()).filter(Boolean).join(",")
+    : null;
+
+  const event = await prisma.event.create({
+    data: {
+      title: String(body.title),
+      description: String(body.description),
+      date: eventDate,
+      venue: String(body.venue),
+      capacity,
+      university: String(body.university),
+      category: category as "ACADEMIC" | "NETWORKING" | "WORKSHOP" | "SOCIAL" | "CAREER",
+      tags,
+      creatorId: userId,
+      status: "PUBLISHED",
+      rsvpCount: 0,
+    },
+  });
+
+  return NextResponse.json(event, { status: 201 });
+}
