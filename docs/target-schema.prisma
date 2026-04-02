@@ -13,15 +13,14 @@
 // Conventions:
 //   - SQLite has no native array type — use comma-separated Strings
 //   - SQLite has no native JSON type — store as String
-//   - Time fields stored as "HH:MM" strings (see ADR-004)
+//   - Time fields stored as "HH:MM" strings (see docs/knowledge-base.md)
 //   - All dates stored in UTC
 //   - All IDs are cuid() strings
 //
 // See also:
-//   - docs/knowledge-base.md (business rules, trust score rules, enums)
-//   - docs/adrs/005-event-category-alignment.md (EventCategory decision)
+//   - docs/knowledge-base.md (business rules, locked architecture decisions, enums)
 //
-// Last updated: 2026-04-01
+// Last updated: 2026-04-02
 // ============================================================================
 
 generator client {
@@ -34,7 +33,7 @@ datasource db {
 
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
-// User roles (ADR-002: mock auth via x-user-id header)
+// User roles (mock auth via x-user-id header — knowledge-base)
 enum Role {
   NOMAD
   UNIVERSITY
@@ -50,7 +49,7 @@ enum VerificationLevel {
   COMMUNITY_VERIFIED
 }
 
-// Broad event classification (aligned with knowledge-base — see ADR-005)
+// Broad event classification (aligned with knowledge-base)
 // Used by both university and community events
 enum EventCategory {
   ACADEMIC
@@ -76,6 +75,13 @@ enum EventStatus {
   PUBLISHED
   CANCELLED
   PAST
+}
+
+// RSVP row lifecycle: only CONFIRMED rows increment Event.rsvpCount
+enum RsvpStatus {
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
 }
 
 // Facility types for campus venues
@@ -280,11 +286,12 @@ model Event {
 }
 
 model EventRsvp {
-  id           String    @id @default(cuid())
-  isWaitlisted Boolean   @default(false) // true = on waitlist, false = confirmed
-  checkedIn    Boolean   @default(false)
-  checkedInAt  DateTime?
-  createdAt    DateTime  @default(now())
+  id               String     @id @default(cuid())
+  status           RsvpStatus @default(CONFIRMED)
+  waitlistPosition Int? // set when status === WAITLISTED; null when CONFIRMED
+  checkedIn        Boolean    @default(false)
+  checkedInAt      DateTime?
+  createdAt        DateTime   @default(now())
 
   // Relations
   userId  String
@@ -387,7 +394,7 @@ model BookingInterest {
 model Booking {
   id        String        @id @default(cuid())
   date      DateTime
-  startTime String        // "HH:MM" format (see ADR-004)
+  startTime String        // "HH:MM" format (see knowledge-base)
   endTime   String        // "HH:MM" format
   status    BookingStatus @default(PENDING)
   qrCode    String?       // data URL string, generated on confirmation

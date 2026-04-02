@@ -60,7 +60,7 @@ docs/
 ## Schema
 
 - **Current state:** `prisma/schema.prisma` — the working schema applied to the database
-- **Target state:** `docs/target-schema.prisma` — the complete canonical schema with all 21 models and 18 enums
+- **Target state:** `docs/target-schema.prisma` — the complete canonical schema with all 21 models and 19 enums
 - Each task file (T.X.XX) specifies which schema changes it introduces
 - Always run `npx prisma db push` after schema changes
 

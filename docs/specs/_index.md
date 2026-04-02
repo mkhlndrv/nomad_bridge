@@ -1,6 +1,6 @@
 # NomadBridge Specification Index
 
-> Last updated: 2026-04-01
+> Last updated: 2026-04-02
 
 ## Feature Overview
 
@@ -70,7 +70,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [Target Schema](../target-schema.prisma) | Complete target Prisma schema — 21 models, 18 enums. Canonical reference for all agents |
+| [Target Schema](../target-schema.prisma) | Complete target Prisma schema — 21 models, 19 enums. Canonical reference for all agents |
 | [Project Setup](project-setup.md) | Seed data definitions (5 users, 4 events, etc.), Vitest configuration, test directory structure, test helpers |
 
 ## Cross-Feature Dependencies

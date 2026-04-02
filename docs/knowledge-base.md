@@ -1,6 +1,6 @@
 # NomadBridge Knowledge Base
 
-> Last updated: 2026-04-01
+> Last updated: 2026-04-02
 
 ## Project Goal
 
@@ -36,7 +36,7 @@ A platform that connects digital nomads in Bangkok with local universities (Chul
 
 - User (name, email, bio, role, trustScore, verification level, skills, avatarUrl, location)
 - Event (title, date, venue, description, capacity, university, category, isCommunity, eventType)
-- EventRsvp (userId + eventId unique pair, createdAt)
+- EventRsvp (userId + eventId unique pair, status RsvpStatus, waitlistPosition?, check-in fields)
 - Facility (name, university, type, location, hours, price, availability)
 - Booking (user, facility, time slot, status, qrCode)
 - BookingRequest (user, facility, proposed date/time, interest count, status)
@@ -66,6 +66,20 @@ A platform that connects digital nomads in Bangkok with local universities (Chul
 - Look up user via `prisma.user.findUnique({ where: { id: userId } })`
 - If user not found → 401
 - Role checks: `user.role === 'ADMIN'` / `'VENUE_MANAGER'` / `'UNIVERSITY'`
+
+## Locked architecture decisions
+
+Cross-cutting choices that should not be “simplified away” without updating this section and `docs/target-schema.prisma`.
+
+1. **Explicit `EventRsvp` model (not implicit many-to-many):** The User ↔ Event RSVP relation uses a real `EventRsvp` table so we can enforce `@@unique([userId, eventId])`, store `createdAt`, `status`, waitlist data, and check-in fields.
+
+2. **Mock auth for MVP:** No auth library. Protected APIs read `x-user-id`; missing or unknown user → 401.
+
+3. **SQLite in development:** Use `prisma db push` (no migration files). Local DB file is gitignored; reset by deleting DB and re-push + seed.
+
+4. **Booking times as strings:** On `Booking` (and related models), store `startTime` / `endTime` as `"HH:mm"` strings; store the calendar date as `DateTime` (date portion). SQLite has no native `TIME` type; full `DateTime` for time-of-day alone is awkward.
+
+5. **Event categories vs community types:** `EventCategory` values are ACADEMIC, NETWORKING, WORKSHOP, SOCIAL, CAREER (broad classification for all events). When `Event.isCommunity === true`, also set `CommunityEventType` (MEETUP, WORKSHOP, SKILL_SHARE, SOCIAL, COWORKING_SESSION). Canonical enums live in `docs/target-schema.prisma`.
 
 ## Trust Score Rules
 
@@ -162,13 +176,14 @@ All notifications are dispatched immediately when the triggering action occurs (
 - **Event categories:** ACADEMIC, NETWORKING, WORKSHOP, SOCIAL, CAREER
 - **Community event types:** MEETUP, WORKSHOP, SKILL_SHARE, SOCIAL, COWORKING_SESSION
 - **Event status:** DRAFT, PUBLISHED, CANCELLED, PAST
+- **RSVP status:** CONFIRMED, WAITLISTED, CANCELLED (`Event.rsvpCount` counts only CONFIRMED)
 - **Booking request status:** OPEN, UNDER_REVIEW, APPROVED, REJECTED, CANCELLED
 - **Application status:** PENDING, ACCEPTED, REJECTED
 - **Notification types:** RSVP_CONFIRMATION, EVENT_REMINDER, EVENT_CANCELLED, WAITLIST_PROMOTED, MATERIALS_AVAILABLE, BOOKING_CONFIRMATION, BOOKING_REMINDER, BOOKING_CANCELLED, LECTURE_INVITE, LECTURE_APPLICATION, LECTURE_FEEDBACK, TRUST_SCORE_CHANGE, FORUM_REPLY
 - **Recording sources:** TLDV, YOUTUBE, VIMEO, UPLOAD
 - **Recording visibility:** PUBLIC, ATTENDEES_ONLY, UNLISTED
 
-> Note: The current `prisma/schema.prisma` uses different EventCategory values (WORKSHOP, SEMINAR, SOCIAL, SPORTS, CULTURAL, OTHER). The canonical target is in `docs/target-schema.prisma`. See ADR-005 for the alignment decision.
+> Note: The current `prisma/schema.prisma` may differ from the target (e.g. legacy EventCategory values). The canonical target is `docs/target-schema.prisma`. Event categories and `CommunityEventType` are defined under **Locked architecture decisions** below.
 - **Collaboration types:** GUEST_LECTURE, WORKSHOP, MENTORSHIP, PROJECT, SKILL_EXCHANGE
 - **User roles:** NOMAD, UNIVERSITY, ADMIN, VENUE_MANAGER
 - **Verification levels:** NONE, EMAIL_VERIFIED, COMMUNITY_VERIFIED
