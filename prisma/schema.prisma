@@ -172,6 +172,8 @@ model Event {
   tags        String?
   rsvpCount   Int           @default(0)
   status      EventStatus   @default(PUBLISHED)
+  isCommunity Boolean       @default(false)
+  eventType   String?       // MEETUP, WORKSHOP, SKILL_SHARE, SOCIAL, COWORKING_SESSION
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
@@ -187,6 +189,7 @@ model Event {
 model EventRsvp {
   id           String   @id @default(cuid())
   isWaitlisted Boolean  @default(false)
+  checkedIn    Boolean  @default(false)
   createdAt    DateTime @default(now())
 
   // Relations
