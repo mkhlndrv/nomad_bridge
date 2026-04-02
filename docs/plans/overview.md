@@ -16,32 +16,19 @@ C.6 Notifications ────┬──► C.4 Facility Booking
                        └──► (integrated into C.1, C.5, C.7)
 ```
 
-## Phased Implementation Plan (Product-First)
+## Parallel Wave Schedule
 
-This plan prioritizes user-visible value and creates explicit "stop points" to ensure reliability and contract integrity before proceeding. Each sprint must pass the `docs/plans/release-gate.md` checklist.
-
-### Phase 1 — MVP Core Loop (Profile → Events → RSVP) 
-*Target: A demoable networking app where users can set up profiles and register for events.*
-- **Sprint P1-S1**: Profile foundations (C.2-S1). *Stop point: roles and verification matched to target schema.*
-- **Sprint P1-S2**: Events discovery (C.1-S1 & C.1-S2). *Stop point: users can browse events and view capacities.*
-- **Sprint P1-S3**: RSVP with waitlist (C.1-S3). *Stop point: full RSVP flow and waitlist placement operates flawlessly.*
-
-### Phase 2 — Notifications "Minimum Useful"
-*Target: Reduce user uncertainty by keeping them informed using multiple channels.*
-- **Sprint P2-S1**: Notification infrastructure (C.6-S1). *Stop point: types map to KB, dedup uses canonical key.*
-- **Sprint P2-S2**: In-app notification center (C.6-S2). *Stop point: users have bell icon / unread counts.*
-- **Sprint P2-S3**: Preferences (C.6-S3). *Stop point: users can toggle Email/LINE/Telegram delivery configs.*
-
-### Phase 3 — Marketplace & Coordination
-*Target: Expand utility for universities and nomads (Facilities, Collabing, Forum).*
-- **Track A (Booking)**: Facility booking (C.4, all sprints). *Stop point: trust gate controls request creation, threshold tracks interests, cancel penalties applied.*
-- **Track B (Collab)**: Collaboration board (C.3, all sprints). *Stop point: posting an offer/request and matching workflow complete.*
-- **Track C (Forum)**: Community forum (C.5, all sprints). *Stop point: full reddit-style thread creation, replies, voting, pacing.*
-
-### Phase 4 — Extensions (Community + Recordings)
-*Target: Community-run events and post-event recorded materials.*
-- **Sprint P4-S1**: Community events (C.7, all sprints). *Stop point: Trust-score>=10 filtering enforced, `CommunityEventType` enum operational.*
-- **Sprint P4-S2**: Manage Recordings (C.8, all sprints). *Stop point: Access control rules matched to specs (PUBLIC vs ATTENDEES_ONLY vs UNLISTED).*
+| Wave | Sprints | Focus |
+|------|---------|-------|
+| W1 | C.2-S1, C.6-S1 | Foundation: User schema + Notification infra |
+| W2 | C.2-S2, C.1-S1, C.6-S2 | Profile API + Event mockups + Notification UI |
+| W3 | C.2-S3, C.1-S2, C.5-S1, C.3-S1 | Profile full + Events basic + Forum/Collab mockups |
+| W4 | C.1-S3, C.4-S1, C.5-S2, C.3-S2 | Events RSVP + Facility mockup + Forum/Collab basic |
+| W5 | C.1-S4, C.4-S2, C.5-S3, C.3-S3, C.7-S1 | Events polish + Facility basic + Votes + Matching + Community |
+| W6 | C.4-S3, C.5-S4, C.3-S4, C.7-S2, C.8-S1 | Interest + Forum full + Feedback + Community full + Recordings |
+| W7 | C.4-S4, C.6-S3, C.7-S3, C.8-S2 | Approve/reject + Notifications full + Community polish + Recordings basic |
+| W8 | C.4-S5, C.8-S3 | Facility polish + Recordings player |
+| W9 | C.8-S4 | Recordings full |
 
 ## Component Summary
 
