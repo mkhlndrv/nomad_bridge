@@ -23,3 +23,10 @@
 | Route | Method | Logic |
 |-------|--------|-------|
 | `app/api/collaborations/[id]/feedback` | POST | Submit rating. One per party. Trust: +3 for 4-5 stars, -2 for 1-2 stars |
+
+## Precision Clarifications
+
+- **Bidirectional feedback:** Both parties can leave feedback after a collaboration is COMPLETED. Each party submits exactly one review per collaboration (enforced by `@@unique([collaborationId, reviewerId])` on CollaborationFeedback)
+- **Comment limit:** Optional written comment is limited to 1,000 characters. Enforce in frontend (character counter) and backend (400 `"Comment must be under 1000 characters"` if exceeded)
+- **Trust score impact:** Only applies to the NOMAD party. University admins' trust scores are not affected by ratings. Rating from university to nomad: +3 for 4-5 stars, -2 for 1-2 stars, 0 for 3 stars. Rating from nomad to university: recorded but no trust score impact
+- **Timing:** Feedback can only be submitted after the collaboration status is COMPLETED. The `/feedback` endpoint returns 400 `"Collaboration must be completed before leaving feedback"` if status is not COMPLETED

@@ -43,6 +43,8 @@ Keep users informed without overwhelming them. Notifications should feel helpful
 - Handle users who haven't set up Telegram — gracefully skip Telegram delivery, don't error.
 - Notification preferences should persist across sessions.
 - Old notifications (> 30 days) can be archived/hidden from the notification center.
+- Duplicate detection is by `(userId, type, referenceId)` tuple. Before inserting a new Notification record, query for an existing match. If found, skip the insert silently.
+- Archive is automatic: notifications older than 30 days are soft-deleted (`archived: true`) by the scheduled cron job. Archived notifications are hidden from the default notification center view but remain in the database and are accessible via `?includeArchived=true`.
 
 ## Acceptance Criteria
 

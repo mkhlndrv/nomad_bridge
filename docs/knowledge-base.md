@@ -103,6 +103,20 @@ A platform that connects digital nomads in Bangkok with local universities (Chul
 
 Triggers are backend-only — invoked internally by feature implementations, no dedicated API routes.
 
+### Notification Categories
+
+User preferences are grouped into 5 categories. Each category controls one or more triggers:
+
+| Category | Trigger Numbers | Triggers |
+|----------|----------------|----------|
+| Events | #1, #2, #3, #4, #5 | RSVP confirmation, Event reminder, Event cancelled, Waitlist promoted, Materials available |
+| Bookings | #6, #7, #8 | Booking confirmation + QR, Booking reminder, Booking cancelled |
+| Lectures | #9, #10, #11 | Guest lecture invite, Lecture application, Lecture feedback |
+| Community | #13 | Forum reply to your thread |
+| Trust | #12 | Trust score change (significant) |
+
+All notifications are dispatched immediately when the triggering action occurs (no batching). Exceptions: Event reminders (#2) and Booking reminders (#7) are dispatched by a scheduled cron job that runs hourly.
+
 ## Rate Limits & Constants
 
 | Constant | Value |
@@ -116,11 +130,45 @@ Triggers are backend-only — invoked internally by feature implementations, no 
 | Community event trust gate | trustScore >= 10 |
 | Thread edit window | 15 minutes after posting |
 | Collapsed post threshold | net score < -5 |
+| Profile name max length | 100 characters |
+| Profile bio max length | 500 characters |
+| Skills max count | 10 tags per user |
+| Skill tag max length | 30 characters each |
+| Location max length | 100 characters |
+| Collaboration application message max | 500 characters |
+| Collaboration feedback comment max | 1,000 characters |
+| Collaboration post rate limit | 3 per week per user |
+| File upload: profile photo | 2 MB, JPEG/PNG only |
+| File upload: event photo | 5 MB, JPEG/PNG only |
+| File upload: cover image | 5 MB, JPEG/PNG only |
+| File upload: post-event materials | 10 MB, PDF/PPTX/DOCX/ZIP |
+| File upload: recording (direct) | 500 MB, MP4/MP3 |
+| QR code format (booking) | JSON: {bookingId, eventTitle, date, venueName} |
+| QR code format (RSVP) | JSON: {rsvpId, eventId, eventTitle, userId} |
+| Notification polling frequency | 30 seconds |
+| Notification archive age | 30 days (auto soft-delete) |
+| Notification duplicate key | (userId, type, referenceId) tuple |
+| Interest threshold default | 5 per venue (configurable) |
+| Booking eligibility: trust minimum | trustScore >= -5 |
+| Booking eligibility: verification | Email verified required |
+| Community verification threshold | trustScore >= 30 |
+| Trust score floor | -10 |
+| Max active community events | 5 per organizer |
+| Max event photos | 5 per event |
 
 ### Enums
 
 - **Forum categories:** General, Tips, Events, Housing, Coworking
 - **Event categories:** ACADEMIC, NETWORKING, WORKSHOP, SOCIAL, CAREER
+- **Community event types:** MEETUP, WORKSHOP, SKILL_SHARE, SOCIAL, COWORKING_SESSION
+- **Event status:** DRAFT, PUBLISHED, CANCELLED, PAST
+- **Booking request status:** OPEN, UNDER_REVIEW, APPROVED, REJECTED, CANCELLED
+- **Application status:** PENDING, ACCEPTED, REJECTED
+- **Notification types:** RSVP_CONFIRMATION, EVENT_REMINDER, EVENT_CANCELLED, WAITLIST_PROMOTED, MATERIALS_AVAILABLE, BOOKING_CONFIRMATION, BOOKING_REMINDER, BOOKING_CANCELLED, LECTURE_INVITE, LECTURE_APPLICATION, LECTURE_FEEDBACK, TRUST_SCORE_CHANGE, FORUM_REPLY
+- **Recording sources:** TLDV, YOUTUBE, VIMEO, UPLOAD
+- **Recording visibility:** PUBLIC, ATTENDEES_ONLY, UNLISTED
+
+> Note: The current `prisma/schema.prisma` uses different EventCategory values (WORKSHOP, SEMINAR, SOCIAL, SPORTS, CULTURAL, OTHER). The canonical target is in `docs/target-schema.prisma`. See ADR-005 for the alignment decision.
 - **Collaboration types:** GUEST_LECTURE, WORKSHOP, MENTORSHIP, PROJECT, SKILL_EXCHANGE
 - **User roles:** NOMAD, UNIVERSITY, ADMIN, VENUE_MANAGER
 - **Verification levels:** NONE, EMAIL_VERIFIED, COMMUNITY_VERIFIED

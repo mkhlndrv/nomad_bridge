@@ -8,11 +8,12 @@
 | [002](002-mock-auth-via-userid.md) | Mock auth via userId for MVP | Accepted | 2026-03-25 | All |
 | [003](003-sqlite-no-migrations.md) | SQLite for development, no migrations | Accepted | 2026-03-25 | Infrastructure |
 | [004](004-explicit-booking-times.md) | Store booking times as strings not DateTime | Accepted | 2026-03-25 | Facility Booking |
+| [005](005-event-category-alignment.md) | Align EventCategory with knowledge base & add CommunityEventType | Accepted | 2026-04-02 | Events |
 
 ## How to Add an ADR
 
 1. Copy the template below
-2. Number sequentially (next: 005)
+2. Number sequentially (next: 006)
 3. Status: Proposed → Accepted / Rejected / Superseded
 4. Never edit an accepted ADR — create a new one that supersedes it
 

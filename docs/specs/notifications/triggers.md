@@ -29,3 +29,11 @@ No frontend components — triggers are backend-only (internal library calls).
 ## API Routes
 
 No dedicated API routes — triggers are invoked internally by other features.
+
+## Precision Clarifications
+
+- **Dispatch timing:** All notifications are dispatched immediately when the triggering action occurs. No batching or delay queue
+- **Scheduled reminders:** Event reminders (NTF-TRIGGER-02, 24h before) and booking reminders (NTF-TRIGGER-07, 2h before) are exceptions. These require a scheduled cron job that runs hourly, finds upcoming events/bookings within the reminder window where reminders haven't been sent yet, and dispatches notifications. Each reminder is marked as sent to prevent duplicates
+- **Delivery strategy:** Fire-and-forget per channel. If a channel's mock service throws, retry up to 2 times with 1-second delay. If still failing, log the error and continue with other channels. Never block the triggering action (e.g., RSVP creation succeeds even if notification fails)
+- **Preference check:** Before dispatching, check the user's `NotificationPreference` for the relevant category + channel. If the user has disabled that channel for that category, skip it silently
+- **Duplicate prevention:** Before creating a Notification record, check for existing notification with the same `(userId, type, referenceId)` tuple. If found, skip. This prevents duplicate notifications on retries or repeated actions

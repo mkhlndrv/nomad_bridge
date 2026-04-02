@@ -24,6 +24,8 @@ Make it easy for digital nomads to discover and request university campus spaces
 - Interested users who expressed "I'd attend" are NOT committed — it's a soft signal, not a binding RSVP.
 - Venue manager can manage multiple venues from a single dashboard.
 - If a venue has no manager assigned, show "Contact university directly" message.
+- Interest threshold is per-venue, stored on `Facility.interestThreshold` (default: 5). Venue managers can update this value via their dashboard (PATCH to `/api/facilities/[id]`). When a booking request's `interestCount` reaches the threshold, the status auto-transitions from OPEN to UNDER_REVIEW and the venue manager is notified.
+- Overlapping booking requests for the same venue and time are explicitly allowed. The venue manager decides which to approve; unapproved requests remain in their current status (OPEN or UNDER_REVIEW). There is no automatic conflict resolution or rejection.
 
 ## Acceptance Criteria
 - Users can browse venues with clear information and manager details [FAC-DIR-01, FAC-DIR-05]

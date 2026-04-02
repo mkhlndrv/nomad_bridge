@@ -37,3 +37,20 @@
 | `app/api/notifications/mark-read` | POST | Mark specific IDs or all as read |
 | `app/api/notifications/preferences` | GET | Current user's preference matrix |
 | `app/api/notifications/preferences` | PUT | Update preferences |
+
+## Precision Clarifications
+
+- **Category-to-trigger mapping:**
+
+  | Category | Notification Types |
+  |----------|-------------------|
+  | Events | RSVP_CONFIRMATION, EVENT_REMINDER, EVENT_CANCELLED, WAITLIST_PROMOTED, MATERIALS_AVAILABLE |
+  | Bookings | BOOKING_CONFIRMATION, BOOKING_REMINDER, BOOKING_CANCELLED |
+  | Lectures | LECTURE_INVITE, LECTURE_APPLICATION, LECTURE_FEEDBACK |
+  | Community | FORUM_REPLY |
+  | Trust | TRUST_SCORE_CHANGE |
+
+- **Polling frequency:** The `NotificationBell` component polls `GET /api/notifications/unread-count` every 30 seconds using `setInterval`. No WebSocket or SSE for MVP
+- **Pagination:** The notification list API returns 20 items per page by default. The full notification center page uses a "Load more" button
+- **Archive:** Notifications older than 30 days are automatically marked `archived: true` by the same cron job that handles event/booking reminders. Archived notifications are excluded from the default query but accessible via `?includeArchived=true` query param
+- **Default preferences:** When a new user is created, 5 NotificationPreference records are created (one per category) with all channels set to `true`

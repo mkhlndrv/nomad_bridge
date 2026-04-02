@@ -35,8 +35,11 @@ NomadBridge connects digital nomads in Bangkok with local universities for acade
 
 ```
 docs/
+├── target-schema.prisma            # Complete target Prisma schema (canonical)
 ├── specs/                          # Feature specifications
 │   ├── _index.md                   # Master index with cross-deps & shared resources
+│   ├── shared-contracts.md         # API response formats, component interfaces, file upload limits
+│   ├── project-setup.md            # Seed data definitions, vitest config, test helpers
 │   └── <feature>/                  # One folder per feature
 │       ├── overview.md             # Intent, sub-feature links, edge cases, DoD
 │       └── <sub-feature>.md        # SF requirements, components, API routes
@@ -46,8 +49,8 @@ docs/
 │       ├── plan.md                 # Sprint breakdown, task tables, DoD checklists
 │       ├── test-map.md             # Unit + integration test definitions
 │       └── tasks/T.<N>.<NN>-*.md  # Individual task files (~168 total)
-├── knowledge-base.md               # Project context, entities, NFRs
-└── adrs/                           # Architecture decision records
+├── knowledge-base.md               # Project context, entities, NFRs, constants
+└── adrs/                           # Architecture decision records (5 ADRs)
 ```
 
 - Specs are organized by **feature** (folder) → **sub-feature** (SF .md files)
@@ -55,15 +58,12 @@ docs/
 - Every .md file includes a `> Last updated: YYYY-MM-DD` date line
 - 32 sub-features across 8 features, 196 total requirements
 
-## Current Schema Status
+## Schema
 
-The Prisma schema (`prisma/schema.prisma`) has basic models but significant gaps vs specs:
-- **Missing roles:** VENUE_MANAGER
-- **Missing User fields:** skills, avatarUrl, location, emailVerified, verificationLevel
-- **Missing models:** BookingRequest, BookingInterest, TrustScoreLog, Notification, NotificationPreference, Recording, RecordingNote, ForumReply, ForumVote, ForumBookmark, CollaborationApplication
-- **Needs rename:** LectureOpportunity → CollaborationOpportunity + CollaborationType enum
-- **Missing Event fields:** isCommunity, eventType
-- **Missing ForumPost fields:** pinned, lastActivity, isDeleted, netScore
+- **Current state:** `prisma/schema.prisma` — the working schema applied to the database
+- **Target state:** `docs/target-schema.prisma` — the complete canonical schema with all 21 models and 18 enums
+- Each task file (T.X.XX) specifies which schema changes it introduces
+- Always run `npx prisma db push` after schema changes
 
 ## Development Workflow
 
@@ -185,9 +185,8 @@ Default test users:
 
 ## MCP Usage
 
-- Use the `nomadbridge-tools` MCP server when relevant.
-- Prefer MCP tools for file operations, QR generation, or custom utilities.
-- Always validate inputs in custom tools.
+- The `nomadbridge-tools` MCP server is optional and not required for core development.
+- It may provide convenience tools for file operations or QR generation but is not a dependency for any feature.
 
 ## Definition of Done
 
@@ -202,7 +201,10 @@ Default test users:
 ## When in Doubt
 
 - Prioritize clarity and simplicity.
-- Reference `docs/knowledge-base.md` for project context.
+- Reference `docs/target-schema.prisma` for the complete target database schema.
+- Reference `docs/specs/shared-contracts.md` for API response formats, component interfaces, file upload limits, and cross-cutting contracts.
+- Reference `docs/specs/project-setup.md` for seed data, test configuration, and test helpers.
+- Reference `docs/knowledge-base.md` for project context, business rules, and constants.
 - Reference `docs/specs/_index.md` for feature index and cross-dependencies.
 - Reference `docs/plans/overview.md` for implementation wave plan.
 - Ask for clarification if requirements are ambiguous.

@@ -26,3 +26,10 @@
 | Route | Method | Logic |
 |-------|--------|-------|
 | `app/api/events` | POST (enhanced) | Community event creation: validate trust >= 10, active events <= 5, auto-set organizer attending |
+
+## Precision Clarifications
+
+- **Cover image:** Same limits as event photos: 5 MB max, JPEG/PNG only. Stored in `Event.imageUrl`
+- **Capacity semantics:** When capacity is set to 0, it means unlimited attendance. The RSVP system skips capacity checks when `event.capacity === 0`. The UI displays "Unlimited" instead of "0/0 spots"
+- **Category vs. event type:** Community events have BOTH an `EventCategory` (ACADEMIC, NETWORKING, WORKSHOP, SOCIAL, CAREER) from the category dropdown AND a `CommunityEventType` (MEETUP, WORKSHOP, SKILL_SHARE, SOCIAL, COWORKING_SESSION) from the EventTypeSelector component. These are independent fields on the Event model
+- **Auto-RSVP:** The creator is automatically RSVPed to their own community event (COM-CREATE-04). This creates an EventRsvp record with `isWaitlisted: false` and increments `rsvpCount` by 1

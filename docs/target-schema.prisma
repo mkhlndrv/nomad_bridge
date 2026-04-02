@@ -1,0 +1,625 @@
+// ============================================================================
+// NomadBridge — TARGET Prisma Schema
+// ============================================================================
+//
+// This is the COMPLETE TARGET state of the database schema.
+// It is NOT the current schema (see prisma/schema.prisma for current state).
+//
+// Purpose:
+//   - Single canonical reference for all coding agents
+//   - Prevents conflicting schema changes when agents work in parallel
+//   - Each task file (T.X.XX) specifies which subset of changes it introduces
+//
+// Conventions:
+//   - SQLite has no native array type — use comma-separated Strings
+//   - SQLite has no native JSON type — store as String
+//   - Time fields stored as "HH:MM" strings (see ADR-004)
+//   - All dates stored in UTC
+//   - All IDs are cuid() strings
+//
+// See also:
+//   - docs/knowledge-base.md (business rules, trust score rules, enums)
+//   - docs/specs/shared-contracts.md (API contracts, component interfaces)
+//   - docs/adrs/005-event-category-alignment.md (EventCategory decision)
+//
+// Last updated: 2026-04-01
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+// User roles (ADR-002: mock auth via x-user-id header)
+enum Role {
+  NOMAD
+  UNIVERSITY
+  ADMIN
+  VENUE_MANAGER
+}
+
+// Verification progression: NONE → EMAIL_VERIFIED → COMMUNITY_VERIFIED
+// Recalculated on every adjustTrustScore() call (no grace period)
+enum VerificationLevel {
+  NONE
+  EMAIL_VERIFIED
+  COMMUNITY_VERIFIED
+}
+
+// Broad event classification (aligned with knowledge-base — see ADR-005)
+// Used by both university and community events
+enum EventCategory {
+  ACADEMIC
+  NETWORKING
+  WORKSHOP
+  SOCIAL
+  CAREER
+}
+
+// Community-specific event formats (from COM-CREATE-05)
+// Only set when Event.isCommunity === true
+enum CommunityEventType {
+  MEETUP
+  WORKSHOP
+  SKILL_SHARE
+  SOCIAL
+  COWORKING_SESSION
+}
+
+// Event lifecycle
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  PAST
+}
+
+// Facility types for campus venues
+enum FacilityType {
+  LIBRARY
+  COWORKING
+  GYM
+  CAFE
+  LAB
+}
+
+// Booking lifecycle (includes COMPLETED — see knowledge-base)
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// Booking request lifecycle
+enum BookingRequestStatus {
+  OPEN
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+// Five collaboration types (from knowledge-base)
+enum CollaborationType {
+  GUEST_LECTURE
+  WORKSHOP
+  MENTORSHIP
+  PROJECT
+  SKILL_EXCHANGE
+}
+
+// Collaboration lifecycle (replaces LectureStatus)
+// OPEN → IN_DISCUSSION (auto on first application) → MATCHED → COMPLETED
+enum CollaborationStatus {
+  OPEN
+  IN_DISCUSSION
+  MATCHED
+  COMPLETED
+  CANCELLED
+}
+
+// Application status for collaboration matching
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// Forum thread categories
+enum ForumCategory {
+  GENERAL
+  TIPS
+  EVENTS
+  HOUSING
+  COWORKING
+}
+
+// 13 notification types matching NTF-TRIGGER-01 through NTF-TRIGGER-13
+enum NotificationType {
+  RSVP_CONFIRMATION      // NTF-TRIGGER-01
+  EVENT_REMINDER         // NTF-TRIGGER-02 (24h before, via cron)
+  EVENT_CANCELLED        // NTF-TRIGGER-03
+  WAITLIST_PROMOTED      // NTF-TRIGGER-04
+  MATERIALS_AVAILABLE    // NTF-TRIGGER-05
+  BOOKING_CONFIRMATION   // NTF-TRIGGER-06
+  BOOKING_REMINDER       // NTF-TRIGGER-07 (2h before, via cron)
+  BOOKING_CANCELLED      // NTF-TRIGGER-08
+  LECTURE_INVITE         // NTF-TRIGGER-09
+  LECTURE_APPLICATION    // NTF-TRIGGER-10
+  LECTURE_FEEDBACK       // NTF-TRIGGER-11
+  TRUST_SCORE_CHANGE    // NTF-TRIGGER-12
+  FORUM_REPLY           // NTF-TRIGGER-13
+}
+
+// Notification delivery channels
+enum NotificationChannel {
+  EMAIL
+  LINE
+  TELEGRAM
+  IN_APP
+}
+
+// Notification preference categories (5 categories for 13 triggers)
+// Mapping: see docs/specs/shared-contracts.md
+enum NotificationCategory {
+  EVENTS    // RSVP_CONFIRMATION, EVENT_REMINDER, EVENT_CANCELLED, WAITLIST_PROMOTED, MATERIALS_AVAILABLE
+  BOOKINGS  // BOOKING_CONFIRMATION, BOOKING_REMINDER, BOOKING_CANCELLED
+  LECTURES  // LECTURE_INVITE, LECTURE_APPLICATION, LECTURE_FEEDBACK
+  COMMUNITY // FORUM_REPLY
+  TRUST     // TRUST_SCORE_CHANGE
+}
+
+// Recording source types
+enum RecordingSource {
+  TLDV
+  YOUTUBE
+  VIMEO
+  UPLOAD
+}
+
+// Recording access control
+enum RecordingVisibility {
+  PUBLIC
+  ATTENDEES_ONLY
+  UNLISTED
+}
+
+// Forum vote direction
+enum VoteDirection {
+  UP
+  DOWN
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+// ── User & Profile (C.2: Participant Profile) ──────────────────────────────
+
+model User {
+  id                String            @id @default(cuid())
+  name              String            // max 100 chars
+  email             String            @unique
+  bio               String?           // max 500 chars
+  role              Role              @default(NOMAD)
+  trustScore        Int               @default(0) // floor: -10
+  skills            String?           // comma-separated, max 10 tags, each max 30 chars
+  avatarUrl         String?
+  location          String?           // max 100 chars, self-reported
+  emailVerified     Boolean           @default(false)
+  verificationLevel VerificationLevel @default(NONE)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  createdEvents              Event[]                    @relation("EventCreator")
+  rsvps                      EventRsvp[]
+  uploadedPhotos             EventPhoto[]
+  uploadedMaterials          EventMaterial[]
+  bookings                   Booking[]
+  bookingRequests            BookingRequest[]
+  bookingInterests           BookingInterest[]
+  collaborations             CollaborationOpportunity[]
+  collaborationApplications  CollaborationApplication[]
+  feedbackGiven              CollaborationFeedback[]    @relation("FeedbackReviewer")
+  feedbackReceived           CollaborationFeedback[]    @relation("FeedbackReviewee")
+  forumPosts                 ForumPost[]
+  forumReplies               ForumReply[]
+  forumVotes                 ForumVote[]
+  forumBookmarks             ForumBookmark[]
+  trustScoreLogs             TrustScoreLog[]
+  notifications              Notification[]
+  notificationPreferences    NotificationPreference[]
+  uploadedRecordings         Recording[]
+  recordingNotes             RecordingNote[]
+  managedFacilities          Facility[]                 @relation("FacilityManager")
+}
+
+model TrustScoreLog {
+  id        String   @id @default(cuid())
+  delta     Int      // positive or negative change
+  reason    String   // human-readable reason for the change
+  newScore  Int      // trust score AFTER this change
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+// ── Events (C.1: Event Discovery & RSVP) ──────────────────────────────────
+
+model Event {
+  id                 String              @id @default(cuid())
+  title              String
+  description        String?
+  date               DateTime
+  venue              String              // free text (campus name or address)
+  capacity           Int                 @default(50) // 0 = unlimited
+  university         String              // originating university name
+  category           EventCategory       @default(ACADEMIC)
+  imageUrl           String?             // cover image / event photo
+  tags               String?             // comma-separated tags
+  rsvpCount          Int                 @default(0) // only confirmed RSVPs, not waitlisted
+  isCommunity        Boolean             @default(false)
+  communityEventType CommunityEventType? // only set when isCommunity === true
+  status             EventStatus         @default(PUBLISHED)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  // Relations
+  creatorId  String
+  creator    User          @relation("EventCreator", fields: [creatorId], references: [id])
+  rsvps      EventRsvp[]
+  photos     EventPhoto[]
+  materials  EventMaterial[]
+  recordings Recording[]
+}
+
+model EventRsvp {
+  id           String    @id @default(cuid())
+  isWaitlisted Boolean   @default(false) // true = on waitlist, false = confirmed
+  checkedIn    Boolean   @default(false)
+  checkedInAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  // Relations
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
+
+model EventPhoto {
+  id        String   @id @default(cuid())
+  url       String   // stored in public/uploads/events/
+  createdAt DateTime @default(now())
+
+  // Relations
+  eventId      String
+  event        Event  @relation(fields: [eventId], references: [id])
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+}
+
+model EventMaterial {
+  id        String   @id @default(cuid())
+  title     String
+  url       String   // stored in public/uploads/materials/
+  fileType  String?  // e.g., "pdf", "pptx", "docx", "zip"
+  createdAt DateTime @default(now())
+
+  // Relations
+  eventId      String
+  event        Event  @relation(fields: [eventId], references: [id])
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+}
+
+// ── Facility Booking (C.4: Campus Facility Access) ─────────────────────────
+
+model Facility {
+  id                String       @id @default(cuid())
+  name              String
+  university        String
+  type              FacilityType @default(COWORKING)
+  description       String?
+  location          String?
+  imageUrl          String?
+  available         Boolean      @default(true)
+  pricePerHour      Float        @default(0) // 0 = free
+  operatingHours    String?      // e.g., "08:00-20:00 Mon-Fri"
+  amenities         String?      // comma-separated (e.g., "WiFi, Projector, Whiteboard")
+  rules             String?      // usage rules / notes
+  capacity          Int          @default(50)
+  interestThreshold Int          @default(5) // per-venue, configurable by venue manager
+  createdAt         DateTime     @default(now())
+
+  // Relations
+  managerId       String?
+  manager         User?            @relation("FacilityManager", fields: [managerId], references: [id])
+  bookings        Booking[]
+  bookingRequests BookingRequest[]
+}
+
+model BookingRequest {
+  id                  String               @id @default(cuid())
+  eventTitle          String               // what the booking is for
+  eventDescription    String?
+  proposedDate        DateTime             // requested date
+  startTime           String               // "HH:MM" format
+  endTime             String               // "HH:MM" format
+  expectedAttendance  Int
+  purpose             String?
+  status              BookingRequestStatus @default(OPEN)
+  rejectionReason     String?              // set by venue manager on reject
+  interestCount       Int                  @default(0) // count of BookingInterest records
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  // Relations
+  userId     String
+  user       User              @relation(fields: [userId], references: [id])
+  facilityId String
+  facility   Facility          @relation(fields: [facilityId], references: [id])
+  interests  BookingInterest[]
+  booking    Booking?          // created on approval
+}
+
+model BookingInterest {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  bookingRequestId String
+  bookingRequest   BookingRequest @relation(fields: [bookingRequestId], references: [id])
+
+  @@unique([userId, bookingRequestId])
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  date      DateTime
+  startTime String        // "HH:MM" format (see ADR-004)
+  endTime   String        // "HH:MM" format
+  status    BookingStatus @default(PENDING)
+  qrCode    String?       // data URL string, generated on confirmation
+  createdAt DateTime      @default(now())
+
+  // Relations
+  userId           String
+  user             User            @relation(fields: [userId], references: [id])
+  facilityId       String
+  facility         Facility        @relation(fields: [facilityId], references: [id])
+  bookingRequestId String?         @unique
+  bookingRequest   BookingRequest? @relation(fields: [bookingRequestId], references: [id])
+}
+
+// ── Collaboration Board (C.3) ──────────────────────────────────────────────
+
+// Renamed from LectureOpportunity — supports 5 collaboration types
+model CollaborationOpportunity {
+  id                 String              @id @default(cuid())
+  title              String
+  description        String?
+  collaborationType  CollaborationType
+  format             String?             // "in-person", "online", "hybrid"
+  compensation       String?             // "paid", "free", "facility-access"
+  tags               String?             // comma-separated skill tags
+  status             CollaborationStatus @default(OPEN)
+
+  // Type-specific fields (nullable — only relevant for certain types)
+  // Guest Lecture fields:
+  preferredDateRange String?             // free text, e.g., "March 15-30"
+  expectedAudience   Int?
+  department         String?
+  talkFormat         String?             // "lecture", "workshop", "panel"
+  // Research/Project fields:
+  projectDescription String?
+  requiredSkills     String?             // comma-separated
+  estimatedDuration  String?             // free text, e.g., "2-3 months"
+  deliverables       String?
+  // Mentorship fields:
+  frequency          String?             // "weekly", "biweekly", "monthly"
+  topicArea          String?
+  commitmentDuration String?             // free text, e.g., "3 months"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  userId       String
+  user         User                       @relation(fields: [userId], references: [id])
+  applications CollaborationApplication[]
+  feedback     CollaborationFeedback[]
+}
+
+model CollaborationApplication {
+  id        String            @id @default(cuid())
+  message   String?           // max 500 chars
+  status    ApplicationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+
+  // Relations
+  collaborationId String
+  collaboration   CollaborationOpportunity @relation(fields: [collaborationId], references: [id])
+  userId          String
+  user            User                     @relation(fields: [userId], references: [id])
+
+  @@unique([collaborationId, userId])
+}
+
+model CollaborationFeedback {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?  // max 1000 chars
+  createdAt DateTime @default(now())
+
+  // Relations
+  collaborationId String
+  collaboration   CollaborationOpportunity @relation(fields: [collaborationId], references: [id])
+  reviewerId      String
+  reviewer        User @relation("FeedbackReviewer", fields: [reviewerId], references: [id])
+  revieweeId      String
+  reviewee        User @relation("FeedbackReviewee", fields: [revieweeId], references: [id])
+
+  @@unique([collaborationId, reviewerId])
+}
+
+// ── Community Discussion (C.5) ─────────────────────────────────────────────
+
+model ForumPost {
+  id           String        @id @default(cuid())
+  title        String        // max 120 chars
+  content      String        // max 5000 chars
+  category     ForumCategory @default(GENERAL)
+  pinned       Boolean       @default(false)
+  lastActivity DateTime      @default(now()) // updated on new reply
+  isDeleted    Boolean       @default(false) // soft delete — shows "[removed]"
+  upvotes      Int           @default(0)
+  downvotes    Int           @default(0)
+  netScore     Int           @default(0) // upvotes - downvotes
+  replyCount   Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  replies   ForumReply[]
+  votes     ForumVote[]    @relation("PostVotes")
+  bookmarks ForumBookmark[]
+}
+
+model ForumReply {
+  id           String   @id @default(cuid())
+  content      String   // max 5000 chars
+  upvotes      Int      @default(0)
+  downvotes    Int      @default(0)
+  netScore     Int      @default(0) // upvotes - downvotes
+  isBestAnswer Boolean  @default(false) // one per thread, set by thread author
+  isDeleted    Boolean  @default(false) // soft delete — shows "[removed]"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  postId String
+  post   ForumPost   @relation(fields: [postId], references: [id])
+  userId String
+  user   User        @relation(fields: [userId], references: [id])
+  votes  ForumVote[] @relation("ReplyVotes")
+}
+
+model ForumVote {
+  id         String        @id @default(cuid())
+  targetType String        // "POST" or "REPLY"
+  direction  VoteDirection
+  createdAt  DateTime      @default(now())
+
+  // Relations
+  userId  String
+  user    User       @relation(fields: [userId], references: [id])
+  postId  String?
+  post    ForumPost? @relation("PostVotes", fields: [postId], references: [id])
+  replyId String?
+  reply   ForumReply? @relation("ReplyVotes", fields: [replyId], references: [id])
+
+  @@unique([userId, targetType, postId])
+  @@unique([userId, targetType, replyId])
+}
+
+model ForumBookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User      @relation(fields: [userId], references: [id])
+  postId String
+  post   ForumPost @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+// ── Notifications (C.6) ────────────────────────────────────────────────────
+
+model Notification {
+  id           String               @id @default(cuid())
+  type         NotificationType
+  category     NotificationCategory
+  title        String
+  message      String
+  referenceId  String?              // ID of the related entity (event, booking, etc.)
+  referenceUrl String?              // deep link path (e.g., "/events/abc123")
+  read         Boolean              @default(false)
+  archived     Boolean              @default(false) // auto-archived after 30 days
+  createdAt    DateTime             @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Duplicate prevention: check (userId, type, referenceId) before insert
+}
+
+model NotificationPreference {
+  id       String               @id @default(cuid())
+  category NotificationCategory
+  email    Boolean              @default(true)
+  line     Boolean              @default(true)
+  telegram Boolean              @default(true)
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, category])
+}
+
+// ── Manage Recordings (C.8) ────────────────────────────────────────────────
+
+model Recording {
+  id           String              @id @default(cuid())
+  title        String
+  description  String?
+  source       RecordingSource
+  sourceUrl    String              // tl;dv link, YouTube URL, Vimeo URL, or upload path
+  thumbnailUrl String?
+  duration     Int?                // duration in seconds
+  transcript   String?             // full transcript text (or null if unavailable)
+  highlights   String?             // JSON string of highlight markers
+  visibility   RecordingVisibility @default(PUBLIC)
+  viewCount    Int                 @default(0) // incremented on detail page load
+  sortOrder    Int                 @default(0) // for ordering multiple recordings per event
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  // Relations
+  eventId      String
+  event        Event     @relation(fields: [eventId], references: [id])
+  uploadedById String
+  uploadedBy   User      @relation(fields: [uploadedById], references: [id])
+  notes        RecordingNote[]
+}
+
+model RecordingNote {
+  id        String   @id @default(cuid())
+  content   String
+  timestamp Int      // seconds into the recording
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  recordingId String
+  recording   Recording @relation(fields: [recordingId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}

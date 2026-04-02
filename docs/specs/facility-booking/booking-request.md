@@ -8,7 +8,7 @@
 
 | ID | Requirement | Priority |
 |----|------------|----------|
-| FAC-REQ-01 | Any verified user can create a booking request for a venue | Must |
+| FAC-REQ-01 | Any user who is email-verified (PRF-VERIFY-02) AND has trust score >= -5 can create a booking request | Must |
 | FAC-REQ-02 | Request fields: venue, desired date/time range, event title, event description, expected attendance, purpose/category | Must |
 | FAC-REQ-03 | Submitted requests appear as public proposals visible to all users | Must |
 | FAC-REQ-04 | Community members can express interest ("I'd attend") on any open request | Must |
@@ -35,3 +35,9 @@
 | `app/api/booking-requests/[id]` | GET | Request detail with interest count and interested users |
 | `app/api/booking-requests/[id]/interest` | POST | Toggle interest. Update count. Check threshold → notify venue manager if met |
 | `app/api/booking-requests/[id]/submit-review` | POST | Requester manually submits for review before threshold |
+
+## Precision Clarifications
+
+- **Eligibility (FAC-REQ-01):** BOTH conditions must be met: (1) `user.emailVerified === true` AND (2) `user.trustScore >= -5`. If either fails, return 403 with a specific message: `"Email verification required"` or `"Trust score too low to create booking requests (minimum: -5)"`
+- **Interest threshold auto-transition (FAC-REQ-06):** When `interestCount` reaches `facility.interestThreshold`, the BookingRequest status automatically transitions from OPEN to UNDER_REVIEW. The venue manager receives a BOOKING_CONFIRMATION notification via `sendNotification()`
+- **Manual submit (FAC-REQ-07):** The requester can also manually submit for review before the threshold is met, via `POST /api/booking-requests/[id]/submit-review`. This sets status to UNDER_REVIEW and notifies the manager

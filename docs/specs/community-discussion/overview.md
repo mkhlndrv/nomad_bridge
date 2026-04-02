@@ -21,7 +21,7 @@ Give the NomadBridge community a casual, friendly space to share tips, ask quest
 - Thread titles limited to 120 characters.
 - Content limited to 5000 characters per post/reply.
 - Deleted threads/replies should show "[removed]" placeholder, not disappear (preserves conversation context).
-- Only the author can edit their post (within 15 minutes of posting).
+- Only the author can edit their post within 15 minutes of posting. The window is measured from `createdAt` (UTC). The server compares `Date.now()` against `createdAt.getTime() + 15 * 60 * 1000`. After expiry, the PATCH endpoint returns 403 `"Edit window has expired"`. The frontend hides the Edit button when the local clock exceeds `createdAt + 15 minutes`.
 - Admin can delete or pin any thread.
 - User can only upvote OR downvote a post (clicking one removes the other).
 - Author cannot vote on their own posts.

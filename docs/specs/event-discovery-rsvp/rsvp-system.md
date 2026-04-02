@@ -28,3 +28,11 @@
 |-------|--------|-------|
 | `app/api/events/[id]/rsvp` | POST | RSVP via `$transaction`: check capacity, create EventRsvp, increment count. Waitlist if full. Trigger notification |
 | `app/api/events/[id]/rsvp` | DELETE | Cancel RSVP via `$transaction`: delete, decrement count, promote waitlisted. Trigger notification |
+
+## Precision Clarifications
+
+- **Waitlist promotion order:** FIFO based on `EventRsvp.createdAt` — the earliest waitlisted RSVP is promoted first when a spot opens
+- **Notification dispatch:** All notifications are dispatched immediately (no batching). On RSVP creation: `sendNotification(userId, 'RSVP_CONFIRMATION', { eventId, eventTitle })`. On waitlist promotion: `sendNotification(userId, 'WAITLIST_PROMOTED', { eventId, eventTitle })`
+- **Waitlist field:** `EventRsvp.isWaitlisted` boolean distinguishes confirmed RSVPs from waitlisted ones. When promoted, set `isWaitlisted = false`
+- **rsvpCount semantics:** `Event.rsvpCount` only counts confirmed (non-waitlisted) RSVPs. Waitlisted RSVPs do not increment rsvpCount
+- **Transaction scope:** The POST handler wraps capacity-check + create-RSVP + increment-count (or create-waitlisted-RSVP) in a single `prisma.$transaction`. The DELETE handler similarly wraps delete + decrement + promote in one transaction

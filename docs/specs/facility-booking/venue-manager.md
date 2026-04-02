@@ -31,3 +31,9 @@
 | `app/api/booking-requests/managed` | GET | Venue manager's requests across all managed venues. Filter by status |
 | `app/api/booking-requests/[id]/approve` | POST | Approve: set APPROVED, generate QR, create booking, notify requester + interested users |
 | `app/api/booking-requests/[id]/reject` | POST | Reject: set REJECTED, send reason to requester |
+
+## Precision Clarifications
+
+- **QR code content:** On approval, a QR code is generated encoding: `JSON.stringify({ bookingId, eventTitle, date: "YYYY-MM-DD", venueName })`. The QR is generated as a data URL string (using a library like `qrcode`) and stored in `Booking.qrCode`
+- **QR display:** The `QrCodeDisplay` shared component renders the data URL as an `<img>` tag. No external QR service is called at render time. See `docs/specs/shared-contracts.md` for the QrCodeDisplay interface
+- **Approval flow:** On POST to `/approve`: (1) set BookingRequest.status to APPROVED, (2) create a Booking record linked via `bookingRequestId`, (3) generate QR code, (4) notify requester via BOOKING_CONFIRMATION, (5) notify all interested users that the request was approved

@@ -31,3 +31,14 @@
 | `app/api/collaborations/[id]/invite` | POST | University invites (UNIVERSITY role only). Create invitation, notify nomad |
 | `app/api/collaborations/[id]/respond` | POST | Accept/reject application. On accept: status → MATCHED |
 | `app/api/collaborations/[id]/complete` | POST | Mark completed. Trust score +10 for nomad |
+
+## Precision Clarifications
+
+- **Message limit:** Application and invitation messages are limited to 500 characters. Enforce in both frontend (character counter) and backend (400 if exceeded: `"Message must be under 500 characters"`)
+- **Status transitions and authority:**
+  - `OPEN` → `IN_DISCUSSION`: Automatic when the first `CollaborationApplication` is created
+  - `IN_DISCUSSION` → `MATCHED`: When the poster (whoever created the CollaborationOpportunity) accepts an application via `/respond` with `{ action: "accept" }`
+  - `MATCHED` → `COMPLETED`: When either party calls `/complete`
+  - Any status → `CANCELLED`: When the poster calls PATCH with `{ status: "CANCELLED" }`
+- **Multiple applications:** Multiple users can apply to the same opportunity. The poster sees all applications and can accept one. Accepting one does NOT auto-reject others — the poster must reject them manually or they remain PENDING
+- **Duplicate prevention:** A user cannot apply to the same opportunity twice (enforced by `@@unique([collaborationId, userId])` on CollaborationApplication)
