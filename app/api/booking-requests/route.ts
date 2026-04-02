@@ -14,6 +14,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  // Trust gate: users with trust score below -5 cannot create booking requests
+  const TRUST_GATE_THRESHOLD = -5;
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { trustScore: true } });
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  if (user.trustScore < TRUST_GATE_THRESHOLD) {
+    return NextResponse.json({ error: "Your trust score is too low to create booking requests" }, { status: 403 });
+  }
+
   const { facilityId, eventTitle, eventDescription, proposedDate, startTime, endTime, expectedAttendance, purpose } = body as Record<string, string>;
 
   if (!facilityId || !eventTitle || !proposedDate || !startTime || !endTime) {
