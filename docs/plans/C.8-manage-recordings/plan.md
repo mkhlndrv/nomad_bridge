@@ -74,9 +74,3 @@
 - [ ] Access control enforced per recording visibility
 - [ ] Personal notes functional with timestamps
 - [ ] All 24 REC-* requirements satisfied
-
-### 🛑 M3 Stop Point (Phase 4-S2)
-**A user can browse recordings and open a detail page.**
-
-### 📋 M3 Contract Check
-- [ ] Access control rules perfectly match the specs (PUBLIC vs ATTENDEES_ONLY vs UNLISTED) securely enforcing view blocks.
