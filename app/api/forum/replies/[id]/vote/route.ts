@@ -17,9 +17,9 @@ export async function POST(
     return NextResponse.json({ error: "Reply not found" }, { status: 404 });
   }
 
-  if (reply.authorId === userId) {
-    return NextResponse.json({ error: "Cannot vote on your own reply" }, { status: 403 });
-  }
+  // if (reply.authorId === userId) {
+  //   return NextResponse.json({ error: "Cannot vote on your own reply" }, { status: 403 });
+  // }
 
   const body = await request.json();
   const direction = body.direction;

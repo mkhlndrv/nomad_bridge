@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ThreadPost } from "../_components/ThreadPost";
 import { ReplyItem } from "../_components/ReplyItem";
 import { ReplyForm } from "../_components/ReplyForm";
+import { VoteButtons } from "../_components/VoteButtons";
 
 const REPLIES_PAGE_SIZE = 20;
 
@@ -32,11 +33,17 @@ export default async function ThreadDetailPage({
   const sp = await searchParams;
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
 
+  const userId = "user-alice";
+
   const thread = await prisma.forumPost.findUnique({
     where: { id },
     include: {
       user: { select: { id: true, name: true, trustScore: true } },
       _count: { select: { replies: true } },
+      votes: {
+        where: { userId },
+        select: { direction: true },
+      },
     },
   });
 
@@ -49,6 +56,10 @@ export default async function ThreadDetailPage({
     take: REPLIES_PAGE_SIZE,
     include: {
       author: { select: { id: true, name: true, trustScore: true } },
+      votes: {
+        where: { userId },
+        select: { direction: true },
+      },
     },
   });
 
@@ -72,6 +83,15 @@ export default async function ThreadDetailPage({
           ...thread,
           createdAt: thread.createdAt.toISOString(),
         }}
+        voteButtons={
+          <VoteButtons
+            targetType="THREAD"
+            targetId={thread.id}
+            initialScore={thread.netScore}
+            initialVote={thread.votes[0]?.direction ?? null}
+            userId={userId}
+          />
+        }
       />
 
       {/* Replies */}
@@ -89,6 +109,15 @@ export default async function ThreadDetailPage({
                 content: reply.isDeleted ? "[removed]" : reply.content,
                 createdAt: reply.createdAt.toISOString(),
               }}
+              voteButtons={
+                <VoteButtons
+                  targetType="REPLY"
+                  targetId={reply.id}
+                  initialScore={reply.netScore}
+                  initialVote={reply.votes[0]?.direction ?? null}
+                  userId={userId}
+                />
+              }
             />
           ))}
         </div>

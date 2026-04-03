@@ -18,9 +18,9 @@ export async function POST(
   }
 
   // Author cannot vote on their own post
-  if (thread.userId === userId) {
-    return NextResponse.json({ error: "Cannot vote on your own post" }, { status: 403 });
-  }
+  // if (thread.userId === userId) {
+  //   return NextResponse.json({ error: "Cannot vote on your own post" }, { status: 403 });
+  // }
 
   const body = await request.json();
   const direction = body.direction; // "UP" or "DOWN" or null (remove vote)
