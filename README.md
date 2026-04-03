@@ -28,3 +28,29 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Run tests: `npx vitest run`.
 
+## Agentic Development Infrastructure
+
+This project is equipped with a suite of agent-ready development tools that provide high-signal documentation search and real-time project health metrics.
+
+### 1. Documentation Indexing
+Builds a comprehensive structural mapping (`docs/index.json`) of all documentation files. This index is deeply leveraged by the local cascade environment to trace context and architecture dependencies.
+```bash
+npm run docs:index
+```
+
+### 2. Semantic Search
+Perform powerful, content-aware semantic searches across the entire generated documentation map right from the terminal.
+```bash
+# Example: querying the system for "events" logic
+npm run docs:search "events"
+```
+
+### 3. Testing & Coverage Reporting
+Execute the Vitest framework across unit layers to generate real-time metrics and dynamic HTML/JSON test coverage reports locally.
+```bash
+npm run test:report
+```
+
+### 4. Cascade Development Dashboard
+Once the indexing and testing reports are generated, you can view the unified real-time health data visually. While running the Next.js development server (`npm run dev`), navigate directly to local path:
+[http://localhost:3000/cascade](http://localhost:3000/cascade)
