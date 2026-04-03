@@ -2,7 +2,7 @@
 
 **Feature:** [University Event Discovery & RSVP](overview.md)
 **Prefix:** EVT-RSVP
-> Last updated: 2026-04-01
+> Last updated: 2026-04-02
 
 ## Requirements
 
@@ -33,6 +33,6 @@
 
 - **Waitlist promotion order:** FIFO based on `EventRsvp.createdAt` — the earliest waitlisted RSVP is promoted first when a spot opens
 - **Notification dispatch:** All notifications are dispatched immediately (no batching). On RSVP creation: `sendNotification(userId, 'RSVP_CONFIRMATION', { eventId, eventTitle })`. On waitlist promotion: `sendNotification(userId, 'WAITLIST_PROMOTED', { eventId, eventTitle })`
-- **Waitlist field:** `EventRsvp.isWaitlisted` boolean distinguishes confirmed RSVPs from waitlisted ones. When promoted, set `isWaitlisted = false`
+- **RSVP status:** `EventRsvp.status` is `RsvpStatus` (`CONFIRMED`, `WAITLISTED`, `CANCELLED`). Waitlisted rows use `waitlistPosition` (ordered FIFO by this field, ties broken by `createdAt`). On promotion, set `status = CONFIRMED` and `waitlistPosition = null`
 - **rsvpCount semantics:** `Event.rsvpCount` only counts confirmed (non-waitlisted) RSVPs. Waitlisted RSVPs do not increment rsvpCount
 - **Transaction scope:** The POST handler wraps capacity-check + create-RSVP + increment-count (or create-waitlisted-RSVP) in a single `prisma.$transaction`. The DELETE handler similarly wraps delete + decrement + promote in one transaction

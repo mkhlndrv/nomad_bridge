@@ -30,7 +30,7 @@
 
 | Task | Title | Est. | Deps |
 |------|-------|------|------|
-| [T.1.07](tasks/T.1.07-get-events-list-api.md) | GET /api/events — list with filters | 30m | T.1.01 |
+| [T.1.07](tasks/T.1.07-get-events-api.md) | GET /api/events — list with filters | 30m | T.1.01 |
 | [T.1.08](tasks/T.1.08-get-event-detail-api.md) | GET /api/events/[id] — event detail | 25m | T.1.07 |
 | [T.1.09](tasks/T.1.09-post-rsvp-api.md) | POST /api/events/[id]/rsvp — create RSVP | 30m | T.1.08 |
 | [T.1.10](tasks/T.1.10-delete-rsvp-api.md) | DELETE /api/events/[id]/rsvp — cancel | 25m | T.1.09 |
@@ -52,9 +52,9 @@
 |------|-------|------|------|
 | [T.1.13](tasks/T.1.13-build-rsvp-button.md) | Build RsvpButton client component | 30m | T.1.09 |
 | [T.1.14](tasks/T.1.14-build-rsvp-confirmation.md) | Build RsvpConfirmation modal | 25m | T.1.13 |
-| [T.1.15](tasks/T.1.15-implement-waitlist.md) | Implement waitlist logic | 25m | T.1.09, T.1.10 |
+| [T.1.15](tasks/T.1.15-implement-waitlist-logic.md) | Implement waitlist logic | 25m | T.1.09, T.1.10 |
 | [T.1.16](tasks/T.1.16-build-waitlist-indicator.md) | Build WaitlistIndicator | 15m | T.1.15 |
-| [T.1.17](tasks/T.1.17-build-filter-bar-interactive.md) | Build EventFilterBar interactivity | 25m | T.1.07 |
+| [T.1.17](tasks/T.1.17-build-filter-bar-interactivity.md) | Build EventFilterBar interactivity | 25m | T.1.07 |
 
 ---
 
@@ -66,7 +66,7 @@
 | [T.1.19](tasks/T.1.19-post-event-photos-api.md) | POST /api/events/[id]/photos | 20m | T.1.18 |
 | [T.1.20](tasks/T.1.20-build-post-event-materials.md) | Build PostEventMaterials section | 20m | — |
 | [T.1.21](tasks/T.1.21-post-event-materials-api.md) | POST /api/events/[id]/materials | 20m | T.1.20 |
-| [T.1.22](tasks/T.1.22-empty-states-errors.md) | Empty states + error handling | 20m | T.1.11 |
+| [T.1.22](tasks/T.1.22-empty-states-error-handling.md) | Empty states + error handling | 20m | T.1.11 |
 | [T.1.23](tasks/T.1.23-post-create-event-api.md) | POST /api/events — create event | 25m | T.1.01 |
 
 ### M3 DOD

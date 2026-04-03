@@ -15,8 +15,8 @@
 | [T.2.02](tasks/T.2.02-create-profile-seed-data.md) | Create profile seed data | 20m | T.2.01 |
 | [T.2.03](tasks/T.2.03-build-profile-header.md) | Build ProfileHeader mockup | 25m | T.2.02 |
 | [T.2.04](tasks/T.2.04-build-trust-score-badge.md) | Build TrustScoreBadge shared component | 20m | — |
-| [T.2.05](tasks/T.2.05-build-skills-activity.md) | Build SkillTags + ActivitySummary mockups | 25m | — |
-| [T.2.06](tasks/T.2.06-build-profile-page.md) | Build profile page layout | 25m | T.2.03, T.2.04, T.2.05 |
+| [T.2.05](tasks/T.2.05-build-skill-tags-activity.md) | Build SkillTags + ActivitySummary mockups | 25m | — |
+| [T.2.06](tasks/T.2.06-build-profile-page-layout.md) | Build profile page layout | 25m | T.2.03, T.2.04, T.2.05 |
 
 ### M1 Definition of Done
 - [ ] Profile page renders at `/profile` and `/profile/[id]` with seed data
@@ -40,7 +40,7 @@
 | [T.2.07](tasks/T.2.07-get-profile-api.md) | GET /api/profile — current user profile | 25m | T.2.01 |
 | [T.2.08](tasks/T.2.08-get-public-profile-api.md) | GET /api/profile/[id] — public profile | 20m | T.2.07 |
 | [T.2.09](tasks/T.2.09-patch-profile-api.md) | PATCH /api/profile — update profile | 25m | T.2.07 |
-| [T.2.10](tasks/T.2.10-connect-profile-to-api.md) | Connect profile page to API | 25m | T.2.07, T.2.08 |
+| [T.2.10](tasks/T.2.10-connect-profile-page.md) | Connect profile page to API | 25m | T.2.07, T.2.08 |
 | [T.2.11](tasks/T.2.11-build-profile-edit-form.md) | Build ProfileEditForm | 30m | T.2.09 |
 
 ### M2 Definition of Done
@@ -70,7 +70,7 @@
 | [T.2.13](tasks/T.2.13-get-trust-history-api.md) | GET /api/profile/trust-history | 20m | T.2.12 |
 | [T.2.14](tasks/T.2.14-build-trust-score-card.md) | Build TrustScoreCard + TrustScoreHistory | 25m | T.2.13 |
 | [T.2.15](tasks/T.2.15-build-verification-badge.md) | Build VerificationBadge component | 20m | T.2.12 |
-| [T.2.16](tasks/T.2.16-avatar-upload-api.md) | POST /api/profile/avatar — photo upload | 25m | — |
+| [T.2.16](tasks/T.2.16-post-avatar-upload-api.md) | POST /api/profile/avatar — photo upload | 25m | — |
 | [T.2.17](tasks/T.2.17-wire-verification-badges.md) | Wire verification badges across profile | 20m | T.2.15 |
 
 ### M3 Definition of Done

@@ -1,6 +1,22 @@
 # NomadBridge Specification Index
 
-> Last updated: 2026-04-01
+> Last updated: 2026-04-02
+
+## Documentation Authority
+
+When multiple documents cover the same topic, this priority applies:
+
+| Priority | Source | Canonical For |
+|:--------:|--------|---------------|
+| 1 | `docs/target-schema.prisma` | Models, fields, enums, relations |
+| 2 | `docs/specs/**` | Feature requirements, edge cases, acceptance criteria |
+| 3 | `docs/knowledge-base.md` | Business rules, constants, locked architecture decisions |
+| 4 | `CLAUDE.md` | Conventions, API patterns, auth, file structure |
+| 5 | `docs/plans/**` | Task sequencing, sprint breakdown, test maps |
+
+> **Schema rule:** `prisma/schema.prisma` (current) may lag behind `docs/target-schema.prisma` (target). Each task file (T.X.XX) specifies which target-schema changes to apply. After applying, run `npx prisma db push`.
+
+> **No other files define behavior.** Files in `docs/coursework/` are human-audience course deliverables — never use them as implementation references.
 
 ## Feature Overview
 
@@ -70,7 +86,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [Target Schema](../target-schema.prisma) | Complete target Prisma schema — 21 models, 18 enums. Canonical reference for all agents |
+| [Target Schema](../target-schema.prisma) | Complete target Prisma schema — 21 models, 19 enums. Canonical reference for all agents |
 | [Project Setup](project-setup.md) | Seed data definitions (5 users, 4 events, etc.), Vitest configuration, test directory structure, test helpers |
 
 ## Cross-Feature Dependencies

@@ -31,36 +31,47 @@ NomadBridge connects digital nomads in Bangkok with local universities for acade
 
 **Build order:** C.2 (Profile) → C.1 (Events) → C.6 (Notifications) → C.4 (Booking) → C.7 (Community Events) → C.3 (Collaboration) → C.5 (Forum) → C.8 (Recordings)
 
+## Documentation Authority
+
+See `docs/specs/_index.md` § Documentation Authority for the full priority ladder. Quick version:
+
+1. `docs/target-schema.prisma` — canonical for models, fields, enums
+2. `docs/specs/**` — canonical for feature requirements
+3. `docs/knowledge-base.md` — canonical for business rules and constants
+4. This file (`CLAUDE.md`) — canonical for conventions and API patterns
+5. `docs/plans/**` — canonical for task sequencing
+
 ## Documentation Structure
 
 ```
 docs/
 ├── target-schema.prisma            # Complete target Prisma schema (canonical)
 ├── specs/                          # Feature specifications
-│   ├── _index.md                   # Master index with cross-deps & shared resources
+│   ├── _index.md                   # Master index, doc authority, cross-deps
 │   ├── project-setup.md            # Seed data definitions, vitest config, test helpers
 │   └── <feature>/                  # One folder per feature
 │       ├── overview.md             # Intent, sub-feature links, edge cases, DoD
 │       └── <sub-feature>.md        # SF requirements, components, API routes
 ├── plans/                          # Implementation plans
 │   ├── overview.md                 # Wave plan, dependency map, milestones
+│   ├── release-gate.md             # Sprint completion checklist
 │   └── C.<N>-<feature>/           # One folder per component
 │       ├── plan.md                 # Sprint breakdown, task tables, DoD checklists
 │       ├── test-map.md             # Unit + integration test definitions
 │       └── tasks/T.<N>.<NN>-*.md  # Individual task files (~168 total)
-├── knowledge-base.md               # Project context, entities, NFRs, constants
-└── adrs/                           # Architecture decision records (5 ADRs)
+├── coursework/                     # Human-audience course deliverables (not for agents)
+└── knowledge-base.md               # Project context, locked decisions, entities, NFRs
 ```
 
 - Specs are organized by **feature** (folder) → **sub-feature** (SF .md files)
 - Plans are organized by **component** (C.1-C.8) → **sprint** → **tasks** (T.X.XX)
-- Every .md file includes a `> Last updated: YYYY-MM-DD` date line
+- Specs and knowledge-base must include `> Last updated: YYYY-MM-DD`. Plans are recommended.
 - 32 sub-features across 8 features, 196 total requirements
 
 ## Schema
 
 - **Current state:** `prisma/schema.prisma` — the working schema applied to the database
-- **Target state:** `docs/target-schema.prisma` — the complete canonical schema with all 21 models and 18 enums
+- **Target state:** `docs/target-schema.prisma` — the complete canonical schema with all 21 models and 19 enums
 - Each task file (T.X.XX) specifies which schema changes it introduces
 - Always run `npx prisma db push` after schema changes
 
@@ -200,9 +211,12 @@ Default test users:
 ## When in Doubt
 
 - Prioritize clarity and simplicity.
+- **Conflicts between docs?** Follow the authority ladder in `docs/specs/_index.md` § Documentation Authority.
 - Reference `docs/target-schema.prisma` for the complete target database schema.
 - Reference `docs/specs/project-setup.md` for seed data, test configuration, and test helpers.
-- Reference `docs/knowledge-base.md` for project context, business rules, and constants.
-- Reference `docs/specs/_index.md` for feature index and cross-dependencies.
+- Reference `docs/knowledge-base.md` for project context, business rules, locked architecture decisions, and constants.
+- Reference `docs/specs/_index.md` for feature index, cross-dependencies, and doc authority.
 - Reference `docs/plans/overview.md` for implementation wave plan.
+- Reference `docs/plans/release-gate.md` for sprint completion checklist.
+- **Ignore** files in `docs/coursework/` — those are human-audience course deliverables.
 - Ask for clarification if requirements are ambiguous.
