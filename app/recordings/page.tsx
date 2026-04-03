@@ -66,14 +66,24 @@ export default async function RecordingsPage({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {recordings.map((rec) => (
             <Link key={rec.id} href={`/recordings/${rec.id}`} className="group rounded-lg border border-gray-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
-              <div className="relative bg-gray-900 flex items-center justify-center h-36">
-                <Play className="h-10 w-10 text-white/70 group-hover:text-white transition-colors" />
+              <div className="relative h-36 overflow-hidden bg-gray-900 flex items-center justify-center">
+                <img 
+                  src={[
+                    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1475721028070-128a3064e622?auto=format&fit=crop&w=800&q=80",
+                    "https://images.unsplash.com/photo-1591115765373-5207764f72e7?auto=format&fit=crop&w=800&q=80"
+                  ][rec.id.charCodeAt(0) % 3]} 
+                  alt="Video Thumbnail" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors pointer-events-none" />
+                <Play className="relative z-10 h-10 w-10 text-white/90 group-hover:text-white transition-colors" />
                 {rec.duration > 0 && (
-                  <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs text-white">
+                  <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs text-white z-10">
                     {formatDuration(rec.duration)}
                   </span>
                 )}
-                <span className="absolute top-2 left-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] uppercase text-white/80">
+                <span className="absolute top-2 left-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] uppercase text-white/80 z-10">
                   {rec.sourceType}
                 </span>
               </div>

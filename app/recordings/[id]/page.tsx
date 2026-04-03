@@ -64,12 +64,24 @@ export default async function RecordingDetailPage({
               allowFullScreen
             />
           ) : (
-            <div className="text-center text-white/70">
-              <p className="text-lg font-medium">Video Player</p>
-              <p className="mt-1 text-sm">{recording.sourceUrl}</p>
-              {recording.duration > 0 && (
-                <p className="mt-2 text-xs text-white/50">Duration: {formatDuration(recording.duration)}</p>
-              )}
+            <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                <img 
+                  src={[
+                    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1475721028070-128a3064e622?auto=format&fit=crop&w=1200&q=80",
+                    "https://images.unsplash.com/photo-1591115765373-5207764f72e7?auto=format&fit=crop&w=1200&q=80"
+                  ][recording.id.charCodeAt(0) % 3]} 
+                  alt="Video Player Cover" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-50" 
+                />
+                <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                <div className="relative z-10 text-center">
+                  <p className="text-lg font-bold text-white drop-shadow-md">Video Player</p>
+                  <p className="mt-1 text-sm text-white/90 drop-shadow-md">{recording.sourceUrl}</p>
+                  {recording.duration > 0 && (
+                    <p className="mt-2 text-xs font-medium text-white/70 drop-shadow-md">Duration: {formatDuration(recording.duration)}</p>
+                  )}
+                </div>
             </div>
           )}
         </div>

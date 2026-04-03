@@ -15,6 +15,15 @@ const typeColors: Record<string, string> = {
   LAB: "bg-purple-100 text-purple-700",
 };
 
+const venueImages: Record<string, string> = {
+  LIBRARY: "https://images.unsplash.com/photo-1549675584-91f19337af3d?auto=format&fit=crop&w=1200&q=80",
+  COWORKING: "https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?auto=format&fit=crop&w=1200&q=80",
+  GYM: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80",
+  CAFE: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
+  LAB: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=1200&q=80",
+};
+const defaultImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80";
+
 const typeLabels: Record<string, string> = {
   LIBRARY: "Library", COWORKING: "Coworking", GYM: "Gym", CAFE: "Cafe", LAB: "Lab",
 };
@@ -54,8 +63,14 @@ export default async function VenueDetailPage({ params }: { params: Promise<{ id
       </Link>
 
       {/* Hero */}
-      <div className="relative rounded-xl overflow-hidden h-48 sm:h-64 bg-gradient-to-br from-emerald-400 to-teal-600 mb-6">
-        <span className={`absolute top-4 right-4 rounded-full px-3 py-1 text-sm font-semibold ${typeColors[facility.type] ?? "bg-gray-100 text-gray-700"}`}>
+      <div className="relative rounded-xl overflow-hidden h-48 sm:h-64 bg-gray-100 mb-6 shadow-sm">
+        <img 
+          src={venueImages[facility.type] || defaultImage} 
+          alt={facility.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent" />
+        <span className={`absolute top-4 right-4 rounded-full px-3 py-1 text-sm font-semibold ${typeColors[facility.type] ?? "bg-gray-100 text-gray-700"} shadow-sm`}>
           {typeLabels[facility.type] ?? facility.type}
         </span>
       </div>

@@ -37,10 +37,13 @@ export default function RootLayout({
             <Link href="/" className="text-lg font-bold text-gray-900">
               NomadBridge
             </Link>
-            <div className="flex items-center gap-4 text-sm font-medium text-gray-600">
-              <Link href="/forum" className="hover:text-gray-900">Forum</Link>
-              <Link href="/events" className="hover:text-gray-900">Events</Link>
-              <Link href="/recordings" className="hover:text-gray-900">Recordings</Link>
+            <div className="flex items-center gap-5 text-sm font-medium text-gray-600 transition-colors">
+              <Link href="/forum" className="hover:text-gray-900 hover:bg-gray-100 rounded-md px-2 py-1 transition-all">Forum</Link>
+              <Link href="/events" className="hover:text-gray-900 hover:bg-gray-100 rounded-md px-2 py-1 transition-all">Events</Link>
+              <Link href="/collaborations" className="hover:text-gray-900 hover:bg-gray-100 rounded-md px-2 py-1 transition-all">Collaborations</Link>
+              <Link href="/facilities" className="hover:text-gray-900 hover:bg-gray-100 rounded-md px-2 py-1 transition-all">Facilities</Link>
+              <Link href="/recordings" className="hover:text-gray-900 hover:bg-gray-100 rounded-md px-2 py-1 transition-all">Recordings</Link>
+              <Link href="/profile" className="hover:text-gray-900 hover:bg-gray-100 rounded-md px-2 py-1 transition-all">Profile</Link>
               <NotificationBell userId={MOCK_USER_ID} />
             </div>
           </nav>

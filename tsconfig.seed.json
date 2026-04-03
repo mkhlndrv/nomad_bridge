@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "module": "CommonJS",
+    "target": "ES2019",
+    "outDir": "prisma/.seed-build",
+    "rootDir": ".",
+    "moduleResolution": "node"
+  },
+  "include": ["prisma/seed.ts"]
+}
+

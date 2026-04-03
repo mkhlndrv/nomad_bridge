@@ -9,7 +9,8 @@ import { calculateVerificationLevel } from "@/lib/trust-score";
 
 export default async function MyProfilePage() {
   const headersList = await headers();
-  const userId = headersList.get("x-user-id");
+  // Fallback to user-alice to support browser navigation (since middleware cannot inject headers in Next 16)
+  const userId = headersList.get("x-user-id") || "user-alice";
 
   if (!userId) {
     redirect("/");

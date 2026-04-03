@@ -26,6 +26,15 @@ const categoryColors: Record<string, string> = {
   CAREER: "bg-emerald-600",
 };
 
+const categoryImages: Record<string, string> = {
+  ACADEMIC: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
+  NETWORKING: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=800&q=80",
+  WORKSHOP: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80",
+  SOCIAL: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=800&q=80",
+  CAREER: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+};
+const defaultImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80";
+
 const categoryLabels: Record<string, string> = {
   ACADEMIC: "Academic",
   NETWORKING: "Networking",
@@ -42,6 +51,7 @@ export default function EventCard({
   venue,
   university,
   category,
+  imageUrl,
   tags,
   rsvpCount,
   capacity,
@@ -57,7 +67,13 @@ export default function EventCard({
       className="block rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden bg-white"
     >
       {/* Image / gradient header */}
-      <div className="relative h-36 bg-gradient-to-br from-blue-500 to-purple-600">
+      <div className="relative h-40 bg-gray-100">
+        <img
+          src={imageUrl || categoryImages[category] || defaultImage}
+          alt={title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
         {/* Category badge */}
         <span
           className={`absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white ${categoryColors[category] ?? "bg-gray-600"}`}
